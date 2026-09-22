@@ -8,7 +8,7 @@
  * plugin picks up and applies the moment the player actually joins --
  * SkinsRestorer can't resolve a player it's never seen before that point.
  */
-const { SKIN_API_BASE, SKIN_API_KEY } = require('../ipcconstants')
+const { SKIN_API_BASE, SKIN_API_KEY } = require('./assets/js/ipcconstants')
 
 const validMcUsername = /^[a-zA-Z0-9_]{1,16}$/
 

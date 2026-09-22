@@ -1,13 +1,13 @@
 {
-  "name": "helioslauncher",
-  "version": "2.2.1",
-  "productName": "Helios Launcher",
-  "description": "Modded Minecraft Launcher",
-  "author": "Daniel Scalzi (https://github.com/dscalzi/)",
-  "license": "UNLICENSED",
-  "homepage": "https://github.com/dscalzi/HeliosLauncher",
+  "name": "cobblemonfrontierlauncher",
+  "version": "0.1.0",
+  "productName": "Cobblemon Frontier Launcher",
+  "description": "Custom launcher for the Cobblemon Frontier Minecraft server (fork of Helios Launcher)",
+  "author": "Cobblemon Frontier",
+  "license": "MIT",
+  "homepage": "https://github.com/Elyasuuuuu/CobblemonFrontierLauncher",
   "bugs": {
-    "url": "https://github.com/dscalzi/HeliosLauncher/issues"
+    "url": "https://github.com/Elyasuuuuu/CobblemonFrontierLauncher/issues"
   },
   "private": true,
   "main": "index.js",
@@ -47,6 +47,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dscalzi/HeliosLauncher.git"
+    "url": "git+https://github.com/Elyasuuuuu/CobblemonFrontierLauncher.git"
   }
 }

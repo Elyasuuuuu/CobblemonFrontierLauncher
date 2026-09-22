@@ -3,4 +3,5 @@
 /.vscode/
 /target/
 /logs/
-/dist/.github/workflows/
+/dist/
+.github/workflows/

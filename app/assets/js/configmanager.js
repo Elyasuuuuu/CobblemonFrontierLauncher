@@ -350,6 +350,29 @@ exports.addMojangAuthAccount = function(uuid, accessToken, username, displayName
 }
 
 /**
+ * Adds an offline account to the database to be stored. Offline accounts are not
+ * authenticated against any server -- the username is taken as-is. This only works
+ * against a server running in offline mode (online-mode=false).
+ *
+ * @param {string} uuid The offline UUID derived from the username.
+ * @param {string} accessToken A dummy access token (unused, offline servers don't check it).
+ * @param {string} username The chosen in-game username.
+ *
+ * @returns {Object} The authenticated account object created by this action.
+ */
+exports.addOfflineAuthAccount = function(uuid, accessToken, username){
+    config.selectedAccount = uuid
+    config.authenticationDatabase[uuid] = {
+        type: 'offline',
+        accessToken,
+        username: username.trim(),
+        uuid: uuid.trim(),
+        displayName: username.trim()
+    }
+    return config.authenticationDatabase[uuid]
+}
+
+/**
  * Update the tokens of an authenticated microsoft account.
  * 
  * @param {string} uuid The uuid of the authenticated account.

@@ -1,0 +1,48 @@
+<div id="skinPickerContainer" style="display: none;">
+    <div id="skinPickerContent">
+        <div class="loginOptionsMainContent">
+            <h2><%- lang('skinPicker.title') %></h2>
+            <span class="loginSpanDim" id="skinPickerSubheader"><%- lang('skinPicker.subheader') %></span>
+
+            <div class="loginOptionActions" style="margin-top: 20px;">
+                <div class="loginOptionButtonContainer">
+                    <button id="skinPickerModeMojang" class="loginOptionButton skinPickerModeButton">
+                        <span><%- lang('skinPicker.modeMojang') %></span>
+                    </button>
+                </div>
+                <div class="loginOptionButtonContainer">
+                    <button id="skinPickerModeUpload" class="loginOptionButton skinPickerModeButton">
+                        <span><%- lang('skinPicker.modeUpload') %></span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="skinPickerMojangForm" class="skinPickerForm" style="display: none;">
+                <div class="loginFieldContainer">
+                    <span class="loginErrorSpan" id="skinPickerMojangError"><%- lang('skinPicker.invalidUsername') %></span>
+                    <input id="skinPickerMojangName" class="loginField" type="text" placeholder="<%- lang('skinPicker.mojangPlaceholder') %>"/>
+                </div>
+                <button id="skinPickerMojangSubmit" class="loginOptionButton" disabled>
+                    <span><%- lang('skinPicker.apply') %></span>
+                </button>
+            </div>
+
+            <div id="skinPickerUploadForm" class="skinPickerForm" style="display: none;">
+                <input id="skinPickerFileInput" type="file" accept="image/png" style="display: none;"/>
+                <button id="skinPickerFileButton" class="loginOptionButton">
+                    <span id="skinPickerFileButtonText"><%- lang('skinPicker.chooseFile') %></span>
+                </button>
+                <button id="skinPickerUploadSubmit" class="loginOptionButton" disabled>
+                    <span><%- lang('skinPicker.apply') %></span>
+                </button>
+            </div>
+
+            <span class="loginErrorSpan" id="skinPickerApiError"></span>
+
+            <div id="skinPickerCancelContainer">
+                <button id="skinPickerSkipButton"><%- lang('skinPicker.skip') %></button>
+            </div>
+        </div>
+    </div>
+    <script src="./assets/js/scripts/skinPicker.js"></script>
+</div>

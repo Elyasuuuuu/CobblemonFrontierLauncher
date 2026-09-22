@@ -159,11 +159,11 @@ loginButton.addEventListener('click', () => {
         $('.circle-loader').toggleClass('load-complete')
         $('.checkmark').toggle()
         setTimeout(() => {
-            switchView(VIEWS.login, loginViewOnSuccess, 500, 500, async () => {
-                // Temporary workaround
-                if(loginViewOnSuccess === VIEWS.settings){
-                    await prepareSettings()
-                }
+            // Route through the skin picker before landing on the original
+            // success target -- offline accounts have no skin until one is
+            // chosen (or explicitly skipped) here.
+            skinPickerViewOnDone = loginViewOnSuccess
+            switchView(VIEWS.login, VIEWS.skinPicker, 500, 500, () => {
                 loginViewOnSuccess = VIEWS.landing // Reset this for good measure.
                 loginCancelEnabled(false) // Reset this for good measure.
                 loginViewCancelHandler = null // Reset this for good measure.

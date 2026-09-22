@@ -1017,6 +1017,66 @@ body, button {
     bottom: -100px;
 }
 
+/*******************************************************************************
+ *                                                                             *
+ * Skin Picker View (skinPicker.ejs)                                          *
+ *                                                                             *
+ ******************************************************************************/
+
+#skinPickerContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    transition: filter 0.25s ease;
+    background: rgba(0, 0, 0, 0.50);
+}
+
+#skinPickerContent {
+    border-radius: 3px;
+    position: relative;
+    top: -5%;
+}
+
+#skinPickerSubheader {
+    max-width: 20em;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.skinPickerForm {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    width: 16em;
+    margin-top: 15px;
+}
+
+#skinPickerApiError {
+    max-width: 18em;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#skinPickerCancelContainer {
+    margin-top: 20px;
+}
+
+#skinPickerSkipButton {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.65);
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 13px;
+}
+#skinPickerSkipButton:hover,
+#skinPickerSkipButton:focus {
+    color: white;
+}
+
 #loginOptionCancelButton {
     background: none;
     border: none;

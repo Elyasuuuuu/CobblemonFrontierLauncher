@@ -1,3 +1,7 @@
+// See index.js for why: prefer IPv4 for Node's DNS/socket resolution in
+// this process too, since this is where DistroAPI actually makes its request.
+require('dns').setDefaultResultOrder('ipv4first')
+
 const {ipcRenderer}  = require('electron')
 const fs             = require('fs-extra')
 const os             = require('os')

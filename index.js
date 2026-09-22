@@ -1,3 +1,11 @@
+// Prefer IPv4 for Node's own DNS/socket resolution (used by helios-core's
+// HTTP client and electron-updater's GitHub check). On machines with a
+// present-but-broken IPv6 route, Node's default 'verbatim' order can try
+// the IPv6 address first and hang well past Chromium's own Happy Eyeballs
+// timeout before falling back -- this was observed adding minutes to the
+// first network request of a session.
+require('dns').setDefaultResultOrder('ipv4first')
+
 const remoteMain = require('@electron/remote/main')
 remoteMain.initialize()
 

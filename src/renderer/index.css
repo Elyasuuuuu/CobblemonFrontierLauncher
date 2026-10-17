@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Avenir Book';
+    src: url('../../app/assets/fonts/Avenir-Book.ttf');
+}
+
+@font-face {
+    font-family: 'Avenir Medium';
+    src: url('../../app/assets/fonts/Avenir-Medium.ttf');
+}
+
+@font-face {
+    font-family: 'Avenir Heavy';
+    src: url('../../app/assets/fonts/Avenir-Heavy.ttf');
+}
+
+#landingRoot,
+#onboardingRoot,
+#reactSettingsRoot {
+    width: 100%;
+    height: 100%;
+}
+
+/* Les écrans React dessinent leur propre barre de titre et leur fond : la
+   barre d'Helios (frame.ejs), le fond du body et le dégradé de #main,
+   que uibinder.js remet au démarrage, sont neutralisés une fois pour toutes. */
+#frameBar {
+    display: none !important;
+}
+body {
+    background: #0c0c11 !important;
+}
+#main {
+    height: 100% !important;
+    background: none !important;
+}
+#onboardingContainer,
+#reactSettingsContainer {
+    position: absolute;
+    inset: 0;
+}
+/* Les fenêtres de dialogue d'Helios sont redessinées par DialogHost. */
+#overlayContainer {
+    display: none !important;
+}
+#dialogRoot {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* Plain CSS rule rather than a Tailwind arbitrary bg-[url(...)] utility on
+   purpose: Tailwind-generated url()s resolve relative to THIS file either
+   way, but keeping it here (not guessed at from inside a className string)
+   makes that resolution obvious and easy to get right the first time. */
+.cf-app-bg {
+    background-image:
+        linear-gradient(to bottom, rgba(6,6,10,0.35) 0%, rgba(6,6,10,0.1) 120px, rgba(6,6,10,0.4) 100%),
+        url('../../app/assets/images/fond.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Used instead of .cf-app-bg + a live backdrop-blur for the News/Boutique
+   backdrop. A live blur sampling a background sized exactly to the window
+   has no pixels beyond the edge to average in, so it fades out right at
+   that edge -- strong in the middle, weak on the sides (confirmed visually:
+   several nested ancestors already set overflow:hidden for unrelated fixes,
+   which also blocks the usual "overscan the source past the edges" trick).
+   Baking the blur into the image itself at build time sidesteps the whole
+   problem: ImageMagick blurs by extending/reflecting edge pixels instead of
+   treating anything past the edge as transparent, so it's uniform corner to
+   corner with no live blur cost either. Regenerate with:
+     convert fond.jpg -blur 0x24 -quality 82 fond-blurred.jpg */
+.cf-app-bg-blurred {
+    background-image:
+        linear-gradient(to bottom, rgba(6,6,10,0.35) 0%, rgba(6,6,10,0.1) 120px, rgba(6,6,10,0.4) 100%),
+        url('../../app/assets/images/fond-blurred.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+/* ==========================================================================
+   Petit système de composants partagés -- tout le visuel doit passer par ces
+   classes plutôt que par des valeurs arbitraires répétées dans chaque
+   composant, pour que l'ensemble reste cohérent (mêmes rayons, mêmes
+   ombres, mêmes couleurs partout) au lieu d'un patchwork ad-hoc.
+   ========================================================================== */
+@layer components {
+    .cf-card {
+        @apply bg-cf-panel border border-cf-border rounded-2xl;
+    }
+
+    /* Recipe: bg white 15%, border white 30%, blur 12px -- going past ~20px
+       blur starts making whatever's behind unrecognizable, so this is the
+       target to stay near everywhere .cf-glass is used. */
+    .cf-glass {
+        @apply bg-white/[0.15] border border-white/30 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.18)];
+    }
+
+    .cf-pill {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-avenirMedium
+               text-cf-textDim border border-transparent transition-[color,background-color,transform] duration-150;
+    }
+    .cf-pill:hover {
+        @apply text-cf-text bg-white/5 -translate-y-0.5;
+    }
+    .cf-pill-active {
+        @apply bg-cf-text text-cf-bg border-transparent;
+    }
+    .cf-pill-active:hover {
+        @apply bg-cf-text text-cf-bg;
+    }
+
+    .cf-btn {
+        @apply inline-flex items-center justify-center gap-2 font-avenirMedium rounded-full
+               transition-[filter,transform,box-shadow] duration-150;
+    }
+    .cf-btn:hover {
+        filter: brightness(1.12);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .cf-btn-primary {
+        @apply cf-btn text-white bg-gradient-to-br from-cf-accent to-cf-accentDark;
+    }
+    .cf-btn-secondary {
+        @apply cf-btn text-cf-text bg-cf-panelLight border border-cf-border;
+    }
+    .cf-btn-green {
+        @apply cf-btn text-white bg-gradient-to-br from-cf-green to-[#2fa85a];
+    }
+    .cf-btn-red {
+        @apply cf-btn text-white bg-gradient-to-br from-cf-red to-[#b8323a];
+    }
+
+    .cf-icon-btn {
+        @apply flex items-center justify-center rounded-full text-cf-textDim
+               transition-[color,background-color,transform] duration-150
+               hover:text-cf-text hover:bg-white/[0.08] hover:-translate-y-0.5;
+    }
+
+    .cf-badge {
+        @apply inline-flex items-center text-[10px] font-bold uppercase tracking-wide
+               px-2.5 py-1 rounded-full text-white;
+    }
+    .cf-badge-accent { @apply cf-badge bg-cf-accent; }
+    .cf-badge-orange { @apply cf-badge bg-cf-orange text-[#1a1006]; }
+
+    .cf-section-title {
+        @apply font-avenirHeavy font-bold text-3xl text-cf-text;
+    }
+
+    .cf-toast {
+        @apply fixed bottom-6 left-1/2 -translate-x-1/2 cf-card px-5 py-3 text-sm font-avenirMedium
+               text-cf-text transition-opacity duration-200 pointer-events-none;
+    }
+    .cf-toast.is-visible {
+        @apply opacity-100 pointer-events-auto;
+    }
+
+    /* Champs, interrupteurs et curseurs des écrans de réglages et d'accueil. */
+    .cf-input {
+        @apply w-full bg-black/30 border border-white/15 rounded-xl px-4 py-2.5 text-cf-text
+               placeholder:text-cf-textDim outline-none transition-[border-color,background-color] duration-150
+               focus:border-cf-accentLight focus:bg-black/40;
+    }
+    .cf-label {
+        @apply text-xs font-avenirMedium uppercase tracking-wider text-cf-textDim;
+    }
+    .cf-row {
+        @apply flex items-center justify-between gap-6 py-3.5 border-b border-white/10 last:border-b-0;
+    }
+    .cf-panel {
+        @apply bg-[#12121a]/80 border border-white/10 rounded-2xl backdrop-blur-md;
+    }
+    .cf-link {
+        @apply text-cf-accentLight hover:text-white underline-offset-2 hover:underline transition-colors;
+    }
+    .cf-range {
+        @apply w-full accent-[#9b5cf6] cursor-pointer;
+    }
+}
+
+/* Barre de progression sans pourcentage connu (vérification, installation de Java…). */
+@keyframes cfIndeterminate {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(300%); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

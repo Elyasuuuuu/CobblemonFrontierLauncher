@@ -97,6 +97,29 @@ ipcMain.on('distributionIndexDone', (event, res) => {
     event.sender.send('distributionIndexDone', res)
 })
 
+// Window controls for the React-based screens (frame:false has no native
+// controls of its own -- the legacy screens use @electron/remote for this
+// directly from the renderer, but that pattern doesn't carry over well to a
+// bundled preload, so this is real IPC instead).
+ipcMain.on('cobblemon:window-minimize', (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.minimize()
+})
+ipcMain.on('cobblemon:window-maximize', (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (win == null) return
+    if (win.isMaximized()) {
+        win.unmaximize()
+    } else {
+        win.maximize()
+    }
+})
+ipcMain.on('cobblemon:window-close', (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.close()
+})
+ipcMain.handle('cobblemon:window-is-maximized', (event) => {
+    return BrowserWindow.fromWebContents(event.sender)?.isMaximized() ?? false
+})
+
 // Handle trash item.
 ipcMain.handle(SHELL_OPCODE.TRASH_ITEM, async (event, ...args) => {
     try {
@@ -233,12 +256,12 @@ let win
 function createWindow() {
 
     win = new BrowserWindow({
-        width: 980,
-        height: 552,
+        width: 1130,
+        height: 750,
         icon: getPlatformIcon('SealCircle'),
         frame: false,
         webPreferences: {
-            preload: path.join(__dirname, 'app', 'assets', 'js', 'preloader.js'),
+            preload: path.join(__dirname, 'app', 'preload-dist', 'preload-bridge.js'),
             nodeIntegration: true,
             contextIsolation: false
         },

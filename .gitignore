@@ -5,3 +5,9 @@
 /logs/
 /dist/
 .github/workflows/
+
+# Sorties du build React/Vite (régénérées par npm run build:react)
+/app/assets/react/
+/app/preload-dist/
+# Scripts de débogage locaux
+/cdp_*.js

@@ -22,6 +22,11 @@
     src: url('../fonts/Ringbearer.ttf');
 }
 
+@font-face {
+    font-family: 'Avenir Heavy';
+    src: url('../fonts/Avenir-Heavy.ttf');
+}
+
 /*******************************************************************************
  *                                                                             *
  * Element Styles                                                              *
@@ -4025,4 +4030,826 @@ input:checked + .toggleSwitchSlider:before {
 /* Class which is applied when the spinner image is spinning. */
 .rotating {
     animation: rotating 10s linear infinite;
+}
+/* ==========================================================================
+   Refonte de l'interface (style Rinaorc) — News / Jeux / Boutique
+   Bloc ajouté à la fin du fichier exprès : les règles ci-dessous doivent
+   l'emporter sur les anciennes règles #upper/#lower/etc. par ordre de
+   déclaration (même spécificité). Les éléments réutilisés depuis l'ancien
+   layout (launch_button, avatarContainer, server_status_wrapper...)
+   gardent leurs ids pour ne rien casser dans landing.js — uniquement
+   resitués/redessinés ici.
+   ========================================================================== */
+
+:root {
+    --cf-bg: #0c0c11;
+    --cf-panel: #16161d;
+    --cf-panel-light: #1e1e28;
+    --cf-border: rgba(255,255,255,0.08);
+    --cf-text: #f2f2f5;
+    --cf-text-dim: #9a9aa5;
+    --cf-accent: #9b5cf6;
+    --cf-accent-light: #b98cff;
+    --cf-accent-gradient: linear-gradient(135deg, #9b5cf6 0%, #6d3fd6 100%);
+    --cf-orange: #ff8a3d;
+    --cf-green: #4fd67a;
+    --cf-radius: 14px;
+}
+
+#landingContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(to bottom, rgba(6,6,10,0.35) 0%, rgba(6,6,10,0.1) 120px, rgba(6,6,10,0.4) 100%),
+        url('../images/fond.jpg') no-repeat center center;
+    background-size: cover;
+    font-family: 'Avenir Book', sans-serif;
+    color: var(--cf-text);
+}
+
+/* ---------------- Top nav ---------------- */
+
+#topNav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    min-height: 56px;
+    padding: 0 20px;
+    background: transparent;
+    -webkit-app-region: drag;
+}
+
+#topNavLeft {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    -webkit-app-region: no-drag;
+}
+
+#topNavLogo {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-right: 14px;
+}
+
+.topNavTab {
+    background: none;
+    border: none;
+    color: var(--cf-text-dim);
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: 0.15s ease;
+    position: relative;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topNavTabIcon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.topNavTab:hover {
+    color: var(--cf-text);
+    background: rgba(255,255,255,0.05);
+}
+
+.topNavTab.active {
+    color: #fff;
+    background: var(--cf-accent-gradient);
+}
+
+.topNavTabDot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cf-orange);
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+#topNavRight {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    -webkit-app-region: no-drag;
+}
+
+#topNavAccount, .topNavAccount {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--cf-panel-light);
+    border: 1px solid var(--cf-border);
+    border-radius: 10px;
+    padding: 6px 14px 6px 8px;
+    cursor: pointer;
+    color: var(--cf-text);
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 13px;
+}
+
+.topNavAccount:hover {
+    border-color: var(--cf-accent);
+}
+
+.topNavAccount #avatarContainer {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background-size: cover;
+    background-position: center top;
+    background-color: #333;
+    order: -1;
+}
+
+.topNavAccount #user_text {
+    color: var(--cf-text);
+}
+
+/* ---------------- Tab panels ---------------- */
+
+#tabPanels {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+
+.tabPanel {
+    display: none;
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+}
+
+.tabPanel.active {
+    display: flex;
+}
+
+#tabPanelNews, #tabPanelBoutique {
+    display: none;
+    flex-direction: column;
+    padding: 28px 36px;
+}
+#tabPanelNews.active, #tabPanelBoutique.active {
+    display: flex;
+}
+
+#newsHeading, #boutiqueHeading {
+    font-family: 'Avenir Black', 'Avenir Medium', sans-serif;
+    font-size: 30px;
+    margin: 0 0 18px 0;
+}
+
+/* ---------------- Onglet Jeux ---------------- */
+
+#tabPanelJeux.active {
+    display: flex;
+    flex-direction: row;
+}
+
+#jeuxSidebar {
+    width: 300px;
+    min-width: 300px;
+    background: linear-gradient(to right, rgba(6,6,10,0.45) 0%, rgba(6,6,10,0.25) 70%, rgba(6,6,10,0) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 18px 0;
+}
+
+#jeuxGameList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 12px;
+}
+
+.jeuxGameEntry {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px;
+    border-radius: 14px;
+    background: transparent;
+    border: none;
+}
+
+.jeuxGameIconWrap {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+.jeuxGameIcon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.jeuxGameInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+}
+
+.jeuxGameName {
+    font-family: 'Avenir Heavy', 'Avenir Medium', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    color: var(--cf-text);
+    white-space: nowrap;
+}
+
+#server_status_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--cf-text-dim);
+    width: auto;
+    white-space: nowrap;
+}
+
+#jeuxStatusDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cf-green);
+    display: inline-block;
+}
+
+#server_status_wrapper #player_count {
+    color: var(--cf-green);
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 13px;
+}
+
+.jeuxGameStatusLabel {
+    display: none;
+}
+
+#jeuxSidebarFooter {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#mojangStatusWrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--cf-text-dim);
+    position: relative;
+}
+
+#externalMedia {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+#externalMedia .mediaContainer {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+#externalMedia .mediaSVG {
+    width: 14px;
+    height: 14px;
+    fill: var(--cf-text-dim);
+    transition: 0.15s ease;
+}
+
+#externalMedia .mediaContainer:hover .mediaSVG {
+    fill: var(--cf-text);
+}
+
+#jeuxMain {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 30px;
+    gap: 18px;
+    background: transparent;
+}
+
+#jeuxMain #image_seal_container {
+    position: relative;
+    height: 150px;
+    width: 150px;
+    margin-top: 0;
+    border-radius: 0;
+}
+
+#jeuxMain #image_seal {
+    width: 150px;
+    height: 150px;
+    border: none;
+    border-radius: 0;
+    box-sizing: content-box;
+    filter: drop-shadow(0 0 30px rgba(155,92,246,0.45));
+}
+
+#jeuxTagline {
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--cf-text-dim);
+    text-align: center;
+    max-width: 480px;
+}
+
+#jeuxNewsRow {
+    display: flex;
+    gap: 10px;
+    max-width: 100%;
+}
+
+.jeuxNewsCard {
+    width: 150px;
+    min-height: 70px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--cf-border);
+    border-radius: 10px;
+    padding: 10px;
+    cursor: default;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+.jeuxNewsCard .newsCardType {
+    font-size: 9px;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+}
+
+.jeuxNewsCard .jeuxNewsCardTitle {
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 12px;
+    color: var(--cf-text);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+#jeuxBottomBar {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--cf-panel);
+    border: 1px solid var(--cf-border);
+    border-radius: 999px;
+    padding: 10px 14px;
+}
+
+.jeuxIconButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--cf-panel-light);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.jeuxIconButton .mediaSVG {
+    width: 18px;
+    height: 18px;
+    fill: var(--cf-text-dim);
+}
+
+.jeuxIconButton:hover .mediaSVG {
+    fill: var(--cf-text);
+}
+
+#jeuxBottomBar #launch_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+#jeuxBottomBar #launch_button {
+    background: var(--cf-accent-gradient);
+    color: #fff;
+    font-family: 'Avenir Medium', sans-serif;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+    font-size: 15px;
+    padding: 10px 34px;
+    border-radius: 999px;
+    text-shadow: none;
+}
+
+#jeuxBottomBar #launch_button:hover,
+#jeuxBottomBar #launch_button:focus {
+    text-shadow: none;
+    filter: brightness(1.1);
+}
+
+#jeuxBottomBar .bot_divider {
+    display: none;
+}
+
+#jeuxBottomBar #server_selection_button {
+    font-size: 11px;
+    color: var(--cf-text-dim);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.jeuxSecondaryButton {
+    background: var(--cf-panel-light);
+    border: none;
+    color: var(--cf-text);
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.jeuxSecondaryButton:hover {
+    filter: brightness(1.2);
+}
+
+#jeuxMain #launch_details {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+}
+
+/* ---------------- Onglet News ---------------- */
+
+#newsTypeFilter {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.newsFilterPill {
+    background: var(--cf-panel);
+    border: 1px solid var(--cf-border);
+    color: var(--cf-text-dim);
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.newsFilterPill.active {
+    background: var(--cf-accent-gradient);
+    color: #fff;
+    border-color: transparent;
+}
+
+#newsCardsRoot {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+#newsCardsLoading {
+    color: var(--cf-text-dim);
+    font-family: 'Avenir Medium', sans-serif;
+}
+
+.newsCard {
+    background: var(--cf-panel);
+    border: 1px solid var(--cf-border);
+    border-radius: var(--cf-radius);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.newsCard.hero {
+    grid-column: span 2;
+    min-height: 220px;
+    justify-content: flex-end;
+    background-size: cover;
+    background-position: center;
+}
+
+.newsCardType {
+    align-self: flex-start;
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--cf-accent);
+    color: #fff;
+}
+
+.newsCardType.type-mise_a_jour {
+    background: var(--cf-orange);
+}
+
+.newsCardTitle {
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 17px;
+    color: var(--cf-text);
+}
+
+.newsCard.hero .newsCardTitle {
+    font-size: 24px;
+}
+
+.newsCardExcerpt {
+    font-size: 13px;
+    color: var(--cf-text-dim);
+    line-height: 1.5;
+}
+
+.newsCardDate {
+    font-size: 11px;
+    color: var(--cf-text-dim);
+}
+
+/* ---------------- Onglet Boutique ---------------- */
+
+#boutiqueNotice {
+    background: rgba(255,138,61,0.12);
+    border: 1px solid rgba(255,138,61,0.35);
+    color: #ffb37a;
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+}
+
+#boutiqueGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.boutiqueCard {
+    position: relative;
+    background: var(--cf-panel);
+    border: 1px solid var(--cf-border);
+    border-radius: var(--cf-radius);
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+}
+
+.boutiqueCard.featured {
+    border-color: var(--cf-orange);
+}
+
+.boutiqueCardAccent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent, var(--cf-accent));
+}
+
+.boutiqueCardBadge {
+    position: absolute;
+    top: 14px;
+    right: -34px;
+    transform: rotate(35deg);
+    background: var(--cf-orange);
+    color: #1a1006;
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 3px 40px;
+}
+
+.boutiqueCardTitle {
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 18px;
+    margin-top: 6px;
+}
+
+.boutiqueCardPrice {
+    font-family: 'Avenir Black', 'Avenir Medium', sans-serif;
+    font-size: 24px;
+}
+
+.boutiqueCardFeatures {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.boutiqueCardFeatures li {
+    font-size: 12px;
+    color: var(--cf-text-dim);
+    padding-left: 16px;
+    position: relative;
+}
+
+.boutiqueCardFeatures li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--cf-green);
+}
+
+.boutiqueAddButton {
+    background: var(--cf-panel-light);
+    border: 1px solid var(--cf-border);
+    color: var(--cf-text);
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 9px;
+    cursor: pointer;
+}
+
+.boutiqueAddButton:hover {
+    background: var(--cf-accent-gradient);
+    border-color: transparent;
+}
+
+/* Petite notification toast pour les actions non fonctionnelles (Boutique). */
+#cfToast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--cf-panel-light);
+    border: 1px solid var(--cf-border);
+    color: var(--cf-text);
+    font-family: 'Avenir Medium', sans-serif;
+    font-size: 13px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.25s ease;
+    z-index: 5000;
+}
+
+#cfToast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ---------------- Correctifs anti-scroll / débordement ----------------
+   Le launcher est une fenêtre fixe façon kiosque : aucun scroll horizontal
+   ou vertical n'est souhaité nulle part. Le reset box-sizing est limité à
+   #landingContainer pour ne pas affecter les autres écrans (settings,
+   login...) qui n'ont pas ce problème. */
+
+html, body {
+    overflow: hidden !important;
+}
+
+#main {
+    overflow: hidden;
+}
+
+#landingContainer,
+#landingContainer *,
+#landingContainer *::before,
+#landingContainer *::after {
+    box-sizing: border-box;
+}
+
+#landingContainer {
+    overflow: hidden;
+    max-width: 100%;
+}
+
+#topNav,
+#topNavLeft,
+#topNavRight,
+#tabPanelJeux,
+#jeuxSidebar,
+#jeuxMain,
+#tabPanelNews,
+#tabPanelBoutique {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.tabPanel {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#jeuxBottomBar {
+    max-width: calc(100% - 40px);
+}
+
+/* ---------------- Barre de fenêtre (frame.ejs) restylée ----------------
+   La barre de fenêtre reste un élément séparé de #topNav (présente sur TOUS
+   les écrans : bienvenue, connexion, paramètres...), donc on ne peut pas la
+   fusionner sans risquer de casser les boutons min/max/fermer ailleurs que
+   sur l'écran principal. On la restyle pour qu'elle se fonde visuellement
+   avec #topNav (même couleur de fond, pas de bordure visible) plutôt que de
+   la dupliquer ou la masquer dynamiquement par écran. Les boutons
+   eux-mêmes restent les mêmes (classes .fMb/.fRb/.fCb, déjà "faits maison" :
+   frame:false dans index.js, ce ne sont pas des boutons Windows natifs, ils
+   sont juste redessinés ici avec le nouveau thème. */
+
+#frameBar {
+    background: var(--cf-panel);
+}
+
+#frameMain {
+    height: 30px;
+}
+
+#frameContentWin, #frameContentDarwin {
+    align-items: center;
+}
+
+#frameTitleText {
+    color: var(--cf-text-dim);
+    font-family: 'Avenir Medium', sans-serif;
+}
+
+#frameButtonDockWin {
+    top: 0;
+    right: 0;
+    height: 30px;
+}
+
+.frameButton {
+    height: 30px;
+    width: 46px;
+    border-radius: 0;
+}
+
+.frameButton:hover,
+.frameButton:focus {
+    background: var(--cf-panel-light);
+}
+
+.frameButton:active {
+    background: rgba(155,92,246,0.25);
+}
+
+#frameButton_close:hover,
+#frameButton_close:focus {
+    background: #e5484d !important;
+}
+
+#frameButton_close:active {
+    background: #c53030 !important;
 }

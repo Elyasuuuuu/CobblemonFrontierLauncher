@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import stylistic from '@stylistic/eslint-plugin';
+import react from 'eslint-plugin-react';
 import globals from 'globals';
 
 export default defineConfig(
@@ -50,6 +51,26 @@ export default defineConfig(
     rules: {
       'no-unused-vars': 'off',
       'no-undef': 'off'
+    }
+  },
+  {
+    // New React/preload code: browser globals (not node), JSX parsing, and
+    // deliberately NO no-undef/no-unused-vars exemption -- see plan doc §2's
+    // "hygiene rule": this is what stops new code from silently growing a
+    // dependency on a legacy ambient global the way app/assets/js/scripts/*.js
+    // does above.
+    files: ['src/**/*.{js,jsx}'],
+    plugins: { react },
+    languageOptions: {
+      globals: globals.browser,
+      parserOptions: {
+        ecmaFeatures: { jsx: true }
+      }
+    },
+    rules: {
+      // Teaches no-unused-vars that `<Foo/>` counts as using `Foo` -- plain
+      // JS-only analysis can't see JSX usage otherwise.
+      'react/jsx-uses-vars': 'error'
     }
   }
 );

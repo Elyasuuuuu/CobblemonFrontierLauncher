@@ -1,6 +1,6 @@
 {
   "name": "cobblemonfrontierlauncher",
-  "version": "0.1.0",
+  "version": "0.3.1",
   "productName": "Cobblemon Frontier Launcher",
   "description": "Custom launcher for the Cobblemon Frontier Minecraft server (fork of Helios Launcher)",
   "author": "Cobblemon Frontier",
@@ -13,7 +13,10 @@
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder build",
+    "build:preload": "electron-vite build --ignoreConfigWarning",
+    "build:renderer": "vite build",
+    "build:react": "npm run build:preload && npm run build:renderer",
+    "dist": "npm run build:react && electron-builder build",
     "dist:win": "npm run dist -- -w",
     "dist:mac": "npm run dist -- -m",
     "dist:linux": "npm run dist -- -l",
@@ -36,14 +39,23 @@
     "helios-distribution-types": "^1.3.0",
     "jquery": "^3.7.1",
     "lodash.merge": "^4.6.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "semver": "^7.7.3",
     "toml": "^3.0.0"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.6.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.6.1",
     "electron": "^39.2.7",
     "electron-builder": "^26.4.0",
-    "eslint": "^9.39.2"
+    "electron-vite": "^5.0.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react": "^7.37.5",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^3.4.19",
+    "vite": "^6.4.3"
   },
   "repository": {
     "type": "git",

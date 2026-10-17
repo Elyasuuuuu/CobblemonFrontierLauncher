@@ -1,40 +1,87 @@
 <div id="landingContainer" style="display: none;">
-    <div id="upper">
-        <div id="left">
-            <div id="image_seal_container">
-                <img id="image_seal" src="assets/images/SealCircle.png"/>
-                <div id="updateAvailableTooltip"><%- lang('landing.updateAvailableTooltip') %></div>
-            </div>
+
+    <!-- Nouvelle interface (React), voir src/renderer/landing -->
+    <div id="landingRoot"></div>
+
+    <!--
+        Tout ce qui suit reste caché mais dans le DOM : landing.js (pas
+        touché, chargement plus bas) fait du document.getElementById(...) sur
+        tous ces ids au chargement du script ET dans un setInterval toutes les
+        5 minutes (refreshServerStatus) -- les supprimer casserait ça. Rien de
+        tout ce bloc n'est jamais montré à l'utilisateur.
+    -->
+    <div id="landingLegacyHidden" style="display:none !important;">
+
+    <!-- Barre de navigation principale (refonte) -->
+    <div id="topNav">
+        <div id="topNavLeft">
+            <img id="topNavLogo" src="assets/images/SealCircle.png"/>
+            <button class="topNavTab" id="topNavTabNews" data-tab="news">
+                <svg class="topNavTabIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>
+                <%- lang('landing.nav.news') %><span id="topNavNewsDot" class="topNavTabDot" style="display:none;"></span>
+            </button>
+            <button class="topNavTab active" id="topNavTabJeux" data-tab="jeux">
+                <svg class="topNavTabIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="11" rx="5"/><line x1="7" y1="12.5" x2="7" y2="12.5"/><line x1="6" y1="10.5" x2="6" y2="14.5"/><line x1="4" y1="12.5" x2="8" y2="12.5"/><circle cx="16" cy="11" r="1"/><circle cx="18.5" cy="14" r="1"/></svg>
+                <%- lang('landing.nav.jeux') %>
+            </button>
+            <button class="topNavTab" id="topNavTabBoutique" data-tab="boutique">
+                <svg class="topNavTabIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8 L6 3 H18 L20 8"/><path d="M4 8 H20 V19 A2 2 0 0 1 18 21 H6 A2 2 0 0 1 4 19 Z"/><path d="M9 12 A3 3 0 0 0 15 12"/></svg>
+                <%- lang('landing.nav.boutique') %>
+            </button>
         </div>
-        <div id="content">
+        <div id="topNavRight">
+            <button id="avatarOverlay" class="topNavAccount">
+                <span id="user_text"><%- lang('landing.usernamePlaceholder') %></span>
+                <div id="avatarContainer"></div>
+            </button>
         </div>
-        <div id="right">
-            <div id="rightContainer">
-                <div id="user_content">
-                    <span id="user_text"><%- lang('landing.usernamePlaceholder') %></span>
-                    <div id="avatarContainer">
-                        <button id="avatarOverlay"><%- lang('landing.usernameEditButton') %></button>
-                    </div>
-                </div>
-                <div id="mediaContent">
-                    <div id="internalMedia">
-                        <div class="mediaContainer" id="settingsMediaContainer">
-                            <button class="mediaButton" id="settingsMediaButton">
-                                <svg id="settingsSVG" class="mediaSVG" viewBox="0 0 141.36 137.43">
-                                    <path d="M70.70475616319865,83.36934004916053 a15.320781354859122,15.320781354859122 0 1 1 14.454501310561755,-15.296030496450625 A14.850515045097694,14.850515045097694 0 0 1 70.70475616319865,83.36934004916053 M123.25082856443602,55.425620905968366 h-12.375429204248078 A45.54157947163293,45.54157947163293 0 0 0 107.21227231573047,46.243052436416285 l8.613298726156664,-9.108315894326587 a9.727087354538993,9.727087354538993 0 0 0 0,-13.167456673319956 l-3.465120177189462,-3.6631270444574313 a8.489544434114185,8.489544434114185 0 0 0 -12.375429204248078,0 l-8.613298726156664,9.108315894326587 A40.442902639482725,40.442902639482725 0 0 0 81.99114759747292,25.427580514871032 V12.532383284044531 a9.108315894326587,9.108315894326587 0 0 0 -8.811305593424633,-9.306322761594556 h-4.950171681699231 a9.108315894326587,9.108315894326587 0 0 0 -8.811305593424633,9.306322761594556 v12.895197230826497 a40.17064319698927,40.17064319698927 0 0 0 -9.331073620003052,4.0591407789933704 l-8.613298726156664,-9.108315894326587 a8.489544434114185,8.489544434114185 0 0 0 -12.375429204248078,0 L25.58394128451018,23.967279868769744 a9.727087354538993,9.727087354538993 0 0 0 0,13.167456673319956 L34.19724001066683,46.243052436416285 a45.07131316187151,45.07131316187151 0 0 0 -3.6631270444574313,9.083565035918088 h-12.375429204248078 a9.083565035918088,9.083565035918088 0 0 0 -8.811305593424633,9.306322761594556 v5.197680265784193 a9.108315894326587,9.108315894326587 0 0 0 8.811305593424633,9.306322761594556 h11.979415469712139 a45.69008462208391,45.69008462208391 0 0 0 4.0591407789933704,10.642869115653347 l-8.613298726156664,9.108315894326587 a9.727087354538993,9.727087354538993 0 0 0 0,13.167456673319956 l3.465120177189462,3.6631270444574313 a8.489544434114185,8.489544434114185 0 0 0 12.375429204248078,0 l8.613298726156664,-9.108315894326587 a40.49240435629971,40.49240435629971 0 0 0 9.331073620003052,4.0591407789933704 v12.895197230826497 a9.083565035918088,9.083565035918088 0 0 0 8.811305593424633,9.306322761594556 h4.950171681699231 A9.083565035918088,9.083565035918088 0 0 0 81.99114759747292,123.68848839660077 V110.79329116577425 a40.78941465720167,40.78941465720167 0 0 0 9.331073620003052,-4.0591407789933704 l8.613298726156664,9.108315894326587 a8.489544434114185,8.489544434114185 0 0 0 12.375429204248078,0 l3.465120177189462,-3.6631270444574313 a9.727087354538993,9.727087354538993 0 0 0 0,-13.167456673319956 l-8.613298726156664,-9.108315894326587 a45.665333763675406,45.665333763675406 0 0 0 4.034389920584874,-10.642869115653347 h12.004166328120636 a9.108315894326587,9.108315894326587 0 0 0 8.811305593424633,-9.306322761594556 v-5.197680265784193 a9.083565035918088,9.083565035918088 0 0 0 -8.811305593424633,-9.306322761594556 " id="svg_3" class=""/>
-                                </svg>
-                                <div id="settingsTooltip"><%- lang('landing.settingsTooltip') %></div>
-                            </button>
+    </div>
+
+    <div id="tabPanels">
+
+        <!-- Onglet Jeux -->
+        <div id="tabPanelJeux" class="tabPanel active">
+            <div id="jeuxSidebar">
+                <div id="jeuxGameList">
+                    <div class="jeuxGameEntry active">
+                        <div class="jeuxGameIconWrap">
+                            <img class="jeuxGameIcon" src="assets/images/cbm.png"/>
+                        </div>
+                        <div class="jeuxGameInfo">
+                            <span class="jeuxGameName"><%- lang('landing.gameName') %></span>
+                            <div id="server_status_wrapper">
+                                <span id="jeuxStatusDot"></span>
+                                <span id="player_count"><%- lang('landing.serverStatusPlaceholder') %></span>
+                                <span class="jeuxGameStatusLabel" id="landingPlayerLabel"><%- lang('landing.serverStatus') %></span>
+                            </div>
                         </div>
                     </div>
-                    <div class="mediaDivider"></div>
+                </div>
+                <div id="jeuxSidebarFooter">
+                    <div id="mojangStatusWrapper">
+                        <span class="bot_label"><%- lang('landing.mojangStatus') %></span>
+                        <span id="mojang_status_icon">&#8226;</span>
+                        <div id="mojangStatusTooltip">
+                            <div id="mojangStatusTooltipTitle"><%- lang('landing.mojangStatusTooltipTitle') %></div>
+                            <div id="mojangStatusEssentialContainer">
+                                <!-- Essential Mojang services are populated here. -->
+                            </div>
+                            <div id="mojangStatusNEContainer">
+                                <div class="mojangStatusNEBar"></div>
+                                <div id="mojangStatusNETitle"><%- lang('landing.mojangStatusNETitle') %></div>
+                                <div class="mojangStatusNEBar"></div>
+                            </div>
+                            <div id="mojangStatusNonEssentialContainer">
+                                <!-- Non Essential Mojang services are populated here. -->
+                            </div>
+                        </div>
+                    </div>
                     <div id="externalMedia">
                         <div class="mediaContainer">
-                            <a href="<%- lang('landing.mediaGitHubURL') %>" class="mediaURL" id="linkURL">
-                                <svg id="linkSVG" class="mediaSVG" viewBox="35.34 34.3575 70.68 68.71500">
+                            <a href="<%- lang('landing.mediaDiscordURL') %>" class="mediaURL" id="discordURL">
+                                <svg id="discordSVG" class="mediaSVG" viewBox="35.34 34.3575 70.68 68.71500">
                                     <g>
-                                        <path d="M75.37,65.51a3.85,3.85,0,0,0-1.73.42,8.22,8.22,0,0,1,.94,3.76A8.36,8.36,0,0,1,66.23,78H46.37a8.35,8.35,0,1,1,0-16.7h9.18a21.51,21.51,0,0,1,6.65-8.72H46.37a17.07,17.07,0,1,0,0,34.15H66.23A17,17,0,0,0,82.77,65.51Z"/>
-                                        <path d="M66,73.88a3.85,3.85,0,0,0,1.73-.42,8.22,8.22,0,0,1-.94-3.76,8.36,8.36,0,0,1,8.35-8.35H95A8.35,8.35,0,1,1,95,78H85.8a21.51,21.51,0,0,1-6.65,8.72H95a17.07,17.07,0,0,0,0-34.15H75.13A17,17,0,0,0,58.59,73.88Z"/>
+                                        <path d="M81.23,78.48a6.14,6.14,0,1,1,6.14-6.14,6.14,6.14,0,0,1-6.14,6.14M60,78.48a6.14,6.14,0,1,1,6.14-6.14A6.14,6.14,0,0,1,60,78.48M104.41,73c-.92-7.7-8.24-22.9-8.24-22.9A43,43,0,0,0,88,45.59a17.88,17.88,0,0,0-8.38-1.27l-.13,1.06a23.52,23.52,0,0,1,5.8,1.95,87.59,87.59,0,0,1,8.17,4.87s-10.32-5.63-22.27-5.63a51.32,51.32,0,0,0-23.2,5.63,87.84,87.84,0,0,1,8.17-4.87,23.57,23.57,0,0,1,5.8-1.95l-.13-1.06a17.88,17.88,0,0,0-8.38,1.27,42.84,42.84,0,0,0-8.21,4.56S37.87,65.35,37,73s-.37,11.54-.37,11.54,4.22,5.68,9.9,7.14,7.7,1.47,7.7,1.47l3.75-4.68a21.22,21.22,0,0,1-4.65-2A24.47,24.47,0,0,1,47.93,82S61.16,88.4,70.68,88.4c10,0,22.75-6.44,22.75-6.44a24.56,24.56,0,0,1-5.35,4.56,21.22,21.22,0,0,1-4.65,2l3.75,4.68s2,0,7.7-1.47,9.89-7.14,9.89-7.14.55-3.85-.37-11.54"/>
                                     </g>
                                 </svg>
                             </a>
@@ -78,10 +125,11 @@
                             </a>
                         </div>
                         <div class="mediaContainer">
-                            <a href="<%- lang('landing.mediaDiscordURL') %>" class="mediaURL" id="discordURL">
-                                <svg id="discordSVG" class="mediaSVG" viewBox="35.34 34.3575 70.68 68.71500">
+                            <a href="<%- lang('landing.mediaGitHubURL') %>" class="mediaURL" id="linkURL">
+                                <svg id="linkSVG" class="mediaSVG" viewBox="35.34 34.3575 70.68 68.71500">
                                     <g>
-                                        <path d="M81.23,78.48a6.14,6.14,0,1,1,6.14-6.14,6.14,6.14,0,0,1-6.14,6.14M60,78.48a6.14,6.14,0,1,1,6.14-6.14A6.14,6.14,0,0,1,60,78.48M104.41,73c-.92-7.7-8.24-22.9-8.24-22.9A43,43,0,0,0,88,45.59a17.88,17.88,0,0,0-8.38-1.27l-.13,1.06a23.52,23.52,0,0,1,5.8,1.95,87.59,87.59,0,0,1,8.17,4.87s-10.32-5.63-22.27-5.63a51.32,51.32,0,0,0-23.2,5.63,87.84,87.84,0,0,1,8.17-4.87,23.57,23.57,0,0,1,5.8-1.95l-.13-1.06a17.88,17.88,0,0,0-8.38,1.27,42.84,42.84,0,0,0-8.21,4.56S37.87,65.35,37,73s-.37,11.54-.37,11.54,4.22,5.68,9.9,7.14,7.7,1.47,7.7,1.47l3.75-4.68a21.22,21.22,0,0,1-4.65-2A24.47,24.47,0,0,1,47.93,82S61.16,88.4,70.68,88.4c10,0,22.75-6.44,22.75-6.44a24.56,24.56,0,0,1-5.35,4.56,21.22,21.22,0,0,1-4.65,2l3.75,4.68s2,0,7.7-1.47,9.89-7.14,9.89-7.14.55-3.85-.37-11.54"/>
+                                        <path d="M75.37,65.51a3.85,3.85,0,0,0-1.73.42,8.22,8.22,0,0,1,.94,3.76A8.36,8.36,0,0,1,66.23,78H46.37a8.35,8.35,0,1,1,0-16.7h9.18a21.51,21.51,0,0,1,6.65-8.72H46.37a17.07,17.07,0,1,0,0,34.15H66.23A17,17,0,0,0,82.77,65.51Z"/>
+                                        <path d="M66,73.88a3.85,3.85,0,0,0,1.73-.42,8.22,8.22,0,0,1-.94-3.76,8.36,8.36,0,0,1,8.35-8.35H95A8.35,8.35,0,1,1,95,78H85.8a21.51,21.51,0,0,1-6.65,8.72H95a17.07,17.07,0,0,0,0-34.15H75.13A17,17,0,0,0,58.59,73.88Z"/>
                                     </g>
                                 </svg>
                             </a>
@@ -89,61 +137,26 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div id="lower">
-        <div id="left">
-            <div class="bot_wrapper">
-                <div id="content">
-                    <div id="server_status_wrapper">
-                        <span class="bot_label" id="landingPlayerLabel"><%- lang('landing.serverStatus') %></span>
-                        <span id="player_count"><%- lang('landing.serverStatusPlaceholder') %></span>
-                    </div>
-                    <div class="bot_divider"></div>
-                    <div id="mojangStatusWrapper">
-                        <span class="bot_label"><%- lang('landing.mojangStatus') %></span>
-                        <span id="mojang_status_icon">&#8226;</span>
-                        <div id="mojangStatusTooltip">
-                            <div id="mojangStatusTooltipTitle"><%- lang('landing.mojangStatusTooltipTitle') %></div>
-                            <div id="mojangStatusEssentialContainer">
-                                <!-- Essential Mojang services are populated here. -->
-                            </div>
-                            <div id="mojangStatusNEContainer">
-                                <div class="mojangStatusNEBar"></div>
-                                <div id="mojangStatusNETitle"><%- lang('landing.mojangStatusNETitle') %></div>
-                                <div class="mojangStatusNEBar"></div>
-                            </div>
-                            <div id="mojangStatusNonEssentialContainer">
-                                <!-- Non Essential Mojang services are populated here. -->
-                            </div>
-                        </div>
-                    </div>
+            <div id="jeuxMain">
+                <div id="image_seal_container">
+                    <img id="image_seal" src="assets/images/cbm.png"/>
+                    <div id="updateAvailableTooltip"><%- lang('landing.updateAvailableTooltip') %></div>
                 </div>
-            </div>
-        </div>
-        <div id="center">
-            <div class="bot_wrapper">
-                <div id="content">
-                    <button id="newsButton">
-                        <!--<img src="assets/images/icons/arrow.svg" id="newsButtonSVG"/>-->
-                        <div id="newsButtonAlert" style="display: none;"></div>
-                        <svg id="newsButtonSVG" viewBox="0 0 24.87 13.97">
-                            <defs>
-                                <style>.arrowLine{fill:none;stroke:#FFF;stroke-width:2px;}</style>
-                            </defs>
-                            <polyline class="arrowLine" points="0.71 13.26 12.56 1.41 24.16 13.02"/>
+                <div id="jeuxTagline"><%- lang('landing.tagline') %></div>
+                <div id="jeuxNewsRow"></div>
+                <div id="jeuxBottomBar">
+                    <button id="settingsMediaButton" class="jeuxIconButton">
+                        <svg id="settingsSVG" class="mediaSVG" viewBox="0 0 141.36 137.43">
+                            <path d="M70.70475616319865,83.36934004916053 a15.320781354859122,15.320781354859122 0 1 1 14.454501310561755,-15.296030496450625 A14.850515045097694,14.850515045097694 0 0 1 70.70475616319865,83.36934004916053 M123.25082856443602,55.425620905968366 h-12.375429204248078 A45.54157947163293,45.54157947163293 0 0 0 107.21227231573047,46.243052436416285 l8.613298726156664,-9.108315894326587 a9.727087354538993,9.727087354538993 0 0 0 0,-13.167456673319956 l-3.465120177189462,-3.6631270444574313 a8.489544434114185,8.489544434114185 0 0 0 -12.375429204248078,0 l-8.613298726156664,9.108315894326587 A40.442902639482725,40.442902639482725 0 0 0 81.99114759747292,25.427580514871032 V12.532383284044531 a9.108315894326587,9.108315894326587 0 0 0 -8.811305593424633,-9.306322761594556 h-4.950171681699231 a9.108315894326587,9.108315894326587 0 0 0 -8.811305593424633,9.306322761594556 v12.895197230826497 a40.17064319698927,40.17064319698927 0 0 0 -9.331073620003052,4.0591407789933704 l-8.613298726156664,-9.108315894326587 a8.489544434114185,8.489544434114185 0 0 0 -12.375429204248078,0 L25.58394128451018,23.967279868769744 a9.727087354538993,9.727087354538993 0 0 0 0,13.167456673319956 L34.19724001066683,46.243052436416285 a45.07131316187151,45.07131316187151 0 0 0 -3.6631270444574313,9.083565035918088 h-12.375429204248078 a9.083565035918088,9.083565035918088 0 0 0 -8.811305593424633,9.306322761594556 v5.197680265784193 a9.108315894326587,9.108315894326587 0 0 0 8.811305593424633,9.306322761594556 h11.979415469712139 a45.69008462208391,45.69008462208391 0 0 0 4.0591407789933704,10.642869115653347 l-8.613298726156664,9.108315894326587 a9.727087354538993,9.727087354538993 0 0 0 0,13.167456673319956 l3.465120177189462,3.6631270444574313 a8.489544434114185,8.489544434114185 0 0 0 12.375429204248078,0 l8.613298726156664,-9.108315894326587 a40.49240435629971,40.49240435629971 0 0 0 9.331073620003052,4.0591407789933704 v12.895197230826497 a9.083565035918088,9.083565035918088 0 0 0 8.811305593424633,9.306322761594556 h4.950171681699231 A9.083565035918088,9.083565035918088 0 0 0 81.99114759747292,123.68848839660077 V110.79329116577425 a40.78941465720167,40.78941465720167 0 0 0 9.331073620003052,-4.0591407789933704 l8.613298726156664,9.108315894326587 a8.489544434114185,8.489544434114185 0 0 0 12.375429204248078,0 l3.465120177189462,-3.6631270444574313 a9.727087354538993,9.727087354538993 0 0 0 0,-13.167456673319956 l-8.613298726156664,-9.108315894326587 a45.665333763675406,45.665333763675406 0 0 0 4.034389920584874,-10.642869115653347 h12.004166328120636 a9.108315894326587,9.108315894326587 0 0 0 8.811305593424633,-9.306322761594556 v-5.197680265784193 a9.083565035918088,9.083565035918088 0 0 0 -8.811305593424633,-9.306322761594556 " id="svg_3" class=""/>
                         </svg>
-                        &#10;<span id="newsButtonText"><%- lang('landing.newsButton') %></span>
+                        <div id="settingsTooltip"><%- lang('landing.settingsTooltip') %></div>
                     </button>
-                </div>
-            </div>
-        </div>
-        <div id="right">
-            <div class="bot_wrapper">
-                <div id="launch_content">
-                    <button id="launch_button"><%- lang('landing.launchButton') %></button>
-                    <div class="bot_divider"></div>
-                    <button id="server_selection_button" class="bot_label"><%- lang('landing.launchButtonPlaceholder') %></button>
+                    <div id="launch_content">
+                        <button id="launch_button"><%- lang('landing.launchButton') %></button>
+                        <div class="bot_divider"></div>
+                        <button id="server_selection_button" class="bot_label"><%- lang('landing.launchButtonPlaceholder') %></button>
+                    </div>
+                    <button id="jeuxModsButton" class="jeuxSecondaryButton"><%- lang('landing.modsButton') %></button>
                 </div>
                 <div id="launch_details">
                     <div id="launch_details_left">
@@ -157,8 +170,78 @@
                 </div>
             </div>
         </div>
+
+        <!-- Onglet News -->
+        <div id="tabPanelNews" class="tabPanel">
+            <h1 id="newsHeading"><%- lang('landing.nav.news') %></h1>
+            <div id="newsTypeFilter">
+                <button class="newsFilterPill active" data-newsfilter="tout"><%- lang('landing.newsFilterAll') %></button>
+                <button class="newsFilterPill" data-newsfilter="annonce"><%- lang('landing.newsFilterAnnounce') %></button>
+                <button class="newsFilterPill" data-newsfilter="mise_a_jour"><%- lang('landing.newsFilterUpdate') %></button>
+            </div>
+            <div id="newsCardsRoot">
+                <div id="newsCardsLoading"><%- lang('landing.newsErrorLoadSpan') %></div>
+            </div>
+        </div>
+
+        <!-- Onglet Boutique (coquille visuelle uniquement, pas de paiement réel) -->
+        <div id="tabPanelBoutique" class="tabPanel">
+            <h1 id="boutiqueHeading"><%- lang('landing.nav.boutique') %></h1>
+            <div id="boutiqueNotice"><%- lang('landing.boutiqueNotice') %></div>
+            <div id="boutiqueGrid">
+                <div class="boutiqueCard">
+                    <div class="boutiqueCardAccent" style="--accent:#7CB342"></div>
+                    <div class="boutiqueCardTitle">Rang Dresseur</div>
+                    <div class="boutiqueCardPrice">4,99&nbsp;€</div>
+                    <ul class="boutiqueCardFeatures">
+                        <li><%- lang('landing.boutiquePerkPrefix') %></li>
+                        <li><%- lang('landing.boutiquePerkCosmetics') %></li>
+                    </ul>
+                    <button class="boutiqueAddButton"><%- lang('landing.boutiqueAddButton') %></button>
+                </div>
+                <div class="boutiqueCard">
+                    <div class="boutiqueCardAccent" style="--accent:#3AAFD9"></div>
+                    <div class="boutiqueCardTitle">Rang Capitaine</div>
+                    <div class="boutiqueCardPrice">9,99&nbsp;€</div>
+                    <ul class="boutiqueCardFeatures">
+                        <li><%- lang('landing.boutiquePerkPrefix') %></li>
+                        <li><%- lang('landing.boutiquePerkCosmetics') %></li>
+                        <li><%- lang('landing.boutiquePerkPriority') %></li>
+                    </ul>
+                    <button class="boutiqueAddButton"><%- lang('landing.boutiqueAddButton') %></button>
+                </div>
+                <div class="boutiqueCard featured">
+                    <div class="boutiqueCardBadge"><%- lang('landing.boutiqueBestBadge') %></div>
+                    <div class="boutiqueCardAccent" style="--accent:#FED83D"></div>
+                    <div class="boutiqueCardTitle">Rang Champion</div>
+                    <div class="boutiqueCardPrice">19,99&nbsp;€</div>
+                    <ul class="boutiqueCardFeatures">
+                        <li><%- lang('landing.boutiquePerkPrefix') %></li>
+                        <li><%- lang('landing.boutiquePerkCosmetics') %></li>
+                        <li><%- lang('landing.boutiquePerkPriority') %></li>
+                        <li><%- lang('landing.boutiquePerkPreview') %></li>
+                    </ul>
+                    <button class="boutiqueAddButton"><%- lang('landing.boutiqueAddButton') %></button>
+                </div>
+                <div class="boutiqueCard">
+                    <div class="boutiqueCardAccent" style="--accent:#B02E26"></div>
+                    <div class="boutiqueCardTitle">Rang Maître</div>
+                    <div class="boutiqueCardPrice">34,99&nbsp;€</div>
+                    <ul class="boutiqueCardFeatures">
+                        <li><%- lang('landing.boutiquePerkPrefix') %></li>
+                        <li><%- lang('landing.boutiquePerkCosmetics') %></li>
+                        <li><%- lang('landing.boutiquePerkPriority') %></li>
+                        <li><%- lang('landing.boutiquePerkPreview') %></li>
+                    </ul>
+                    <button class="boutiqueAddButton"><%- lang('landing.boutiqueAddButton') %></button>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <div id="newsContainer">
+
+    <!-- Ancien système de news (RSS), conservé caché pour ne rien casser dans landing.js -->
+    <div id="newsContainer" style="display:none !important;">
         <div id="newsContent" article="-1" style="display: none;">
             <div id="newsStatusContainer">
                 <div id="newsStatusContent">
@@ -215,6 +298,13 @@
                 <span id="nENoneSpan" class="newsErrorContent"><%- lang('landing.newsErrorNoneSpan') %></span>
             </div>
         </div>
+        <button id="newsButton">
+            <div id="newsButtonAlert" style="display: none;"></div>
+            <span id="newsButtonText"><%- lang('landing.newsButton') %></span>
+        </button>
     </div>
+
+    </div><!-- #landingLegacyHidden -->
+
     <script src="./assets/js/scripts/landing.js"></script>
 </div>

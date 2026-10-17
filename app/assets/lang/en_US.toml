@@ -252,6 +252,7 @@ uuid = "UUID"
 selectAccount = "Select Account"
 selectedAccount = "Selected Account ✓"
 logout = "Log Out"
+changeSkin = "Change Skin"
 
 [js.settings.dropinMods]
 removeButton = "Remove"

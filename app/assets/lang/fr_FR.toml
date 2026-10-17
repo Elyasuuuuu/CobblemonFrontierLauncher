@@ -1,0 +1,311 @@
+[ejs.landing]
+updateAvailableTooltip = "Mise à jour disponible"
+usernamePlaceholder = "Pseudo"
+usernameEditButton = "Modifier"
+settingsTooltip = "Paramètres"
+serverStatus = "SERVEUR"
+serverStatusPlaceholder = "HORS LIGNE"
+mojangStatus = "SERVICES MOJANG"
+mojangStatusTooltipTitle = "Services"
+mojangStatusNETitle = "Non&nbsp;essentiels"
+newsButton = "ACTUALITÉS"
+launchButton = "JOUER"
+launchButtonPlaceholder = "&#8226; Aucun serveur choisi"
+launchDetails = "Patiente un instant…"
+newsNavigationStatus = "{currentPage} sur {totalPages}"
+newsErrorLoadSpan = "Recherche des actualités…"
+newsErrorFailedSpan = "Impossible de charger les actualités"
+newsErrorRetryButton = "Réessayer"
+newsErrorNoneSpan = "Aucune actualité"
+
+[ejs.login]
+loginCancelText = "Annuler"
+loginSubheader = "CHOISIS UN PSEUDO"
+loginEmailError = "* Pseudo invalide"
+loginEmailPlaceholder = "PSEUDO"
+loginButtonText = "CONTINUER"
+
+[ejs.skinPicker]
+title = "Choisis ton skin"
+subheader = "Facultatif : copie le skin d'un compte Minecraft, envoie le tien, ou passe pour l'instant."
+modeMojang = "Copier depuis un pseudo Minecraft"
+modeUpload = "Envoyer une image"
+invalidUsername = "* 1 à 16 lettres, chiffres ou _"
+mojangPlaceholder = "PSEUDO MINECRAFT"
+apply = "Appliquer"
+chooseFile = "Choisir un fichier PNG…"
+skip = "Passer"
+
+[ejs.loginOptions]
+loginOptionsTitle = "Connexion"
+loginWithOffline = "Continuer"
+cancelButton = "Annuler"
+
+[ejs.overlay]
+serverSelectHeader = "Serveurs disponibles"
+serverSelectConfirm = "Choisir"
+serverSelectCancel = "Annuler"
+accountSelectHeader = "Choisis un compte"
+accountSelectConfirm = "Choisir"
+accountSelectCancel = "Annuler"
+
+[ejs.settings]
+navHeaderText = "Paramètres"
+navAccount = "Compte"
+navMinecraft = "Jeu"
+navMods = "Mods"
+navJava = "Java"
+navLauncher = "Launcher"
+navAbout = "À propos"
+navUpdates = "Mises à jour"
+navDone = "Terminé"
+tabAccountHeaderText = "Compte"
+tabAccountHeaderDesc = "Ton pseudo et ton skin."
+microsoftAccount = "Microsoft"
+addMicrosoftAccount = "+ Ajouter un compte Microsoft"
+mojangAccount = "Compte"
+addMojangAccount = "+ Ajouter un pseudo"
+minecraftTabHeaderText = "Jeu"
+minecraftTabHeaderDesc = "Options du lancement du jeu."
+gameResolutionTitle = "Résolution du jeu"
+launchFullscreenTitle = "Lancer en plein écran."
+autoConnectTitle = "Se connecter au serveur dès le lancement."
+launchDetachedTitle = "Lancer le jeu indépendamment du launcher."
+launchDetachedDesc = "Sinon, fermer le launcher ferme aussi le jeu."
+tabModsHeaderText = "Mods"
+tabModsHeaderDesc = "Activer ou désactiver les mods."
+switchServerButton = "Changer"
+requiredMods = "Mods obligatoires"
+optionalMods = "Mods facultatifs"
+dropinMods = "Mods ajoutés à la main"
+addMods = "Ajouter des mods"
+dropinRefreshNote = "(F5 pour actualiser)"
+shaderpacks = "Shaders"
+shaderpackDesc = "Activer ou désactiver les shaders. Ils ne tournent bien que sur les machines puissantes. Tu peux ajouter tes propres packs ici."
+selectShaderpack = "Choisir un pack de shaders"
+tabJavaHeaderText = "Java"
+tabJavaHeaderDesc = "Configuration de Java (avancé)."
+memoryTitle = "Mémoire"
+maxRAM = "Mémoire maximale"
+minRAM = "Mémoire minimale"
+memoryDesc = "Pour ce pack, 6 Go sont recommandés. Mettre le minimum et le maximum à la même valeur peut réduire les saccades."
+memoryTotalTitle = "Totale"
+memoryAvailableTitle = "Disponible"
+javaExecutableTitle = "Exécutable Java"
+javaExecSelDialogTitle = "Choisir l'exécutable Java"
+javaExecSelButtonText = "Choisir un fichier"
+javaExecDesc = "L'exécutable Java est vérifié avant chaque lancement."
+javaPathDesc = "Le chemin doit se terminer par <strong>{pathSuffix}</strong>."
+jvmOptsTitle = "Options JVM supplémentaires"
+jvmOptsDesc = "Options passées à Java au lancement. Ne mets pas <em>-Xms</em> ni <em>-Xmx</em> ici."
+launcherTabHeaderText = "Launcher"
+launcherTabHeaderDesc = "Options du launcher lui-même."
+allowPrereleaseTitle = "Recevoir les préversions."
+allowPrereleaseDesc = "Les préversions apportent des nouveautés pas encore complètement testées."
+dataDirectoryTitle = "Dossier des données"
+selectDataDirectory = "Choisir le dossier des données"
+chooseFolder = "Choisir un dossier"
+dataDirectoryDesc = "Tous les fichiers du jeu et le Java installé par le launcher sont rangés dans ce dossier.<br>Les captures d'écran et les mondes sont dans le dossier de l'instance du serveur."
+aboutTabHeaderText = "À propos"
+aboutTabHeaderDesc = "Version du launcher et liens utiles."
+aboutTitle = "{appName}"
+stableRelease = "Version stable"
+versionText = "Version "
+sourceGithub = "Site du serveur"
+support = "Aide (Discord)"
+devToolsConsole = "Console de développement"
+releaseNotes = "Notes de version"
+changelog = "Nouveautés"
+noReleaseNotes = "Pas de notes de version"
+viewReleaseNotes = "Voir les notes de version"
+launcherUpdatesHeaderText = "Mises à jour du launcher"
+launcherUpdatesHeaderDesc = "Télécharger et installer les nouvelles versions du launcher."
+checkForUpdates = "Rechercher une mise à jour"
+whatsNew = "Nouveautés"
+updateReleaseNotes = "Notes de la mise à jour"
+
+[ejs.waiting]
+waitingText = "Patiente un instant…"
+
+[ejs.welcome]
+continueButton = "CONTINUER"
+
+
+[js.discord]
+waiting = "En attente du jeu…"
+state = "Serveur : {shortId}"
+
+[js.index]
+microsoftLoginTitle = "Connexion Microsoft"
+microsoftLogoutTitle = "Déconnexion Microsoft"
+
+[js.login]
+login = "CONNEXION"
+loggingIn = "CONNEXION…"
+success = "C'EST BON"
+tryAgain = "Réessayer"
+
+[js.login.error]
+invalidValue = "* Pseudo invalide"
+requiredValue = "* Obligatoire"
+
+[js.login.error.unknown]
+title = "Erreur inconnue à la connexion"
+desc = "Une erreur inattendue s'est produite. Si elle revient, signale-la sur le Discord."
+
+[js.skinPicker]
+error = "Impossible d'appliquer le skin"
+
+[js.landing.launch]
+pleaseWait = "Patiente un instant…"
+failureTitle = "Erreur au lancement"
+failureText = "Le lancement a échoué. Réessaie ; si ça recommence, demande de l'aide sur le Discord."
+okay = "D'accord"
+
+[js.landing.selectedAccount]
+noAccountSelected = "Aucun compte choisi"
+
+[js.landing.selectedServer]
+noSelection = "Aucun serveur choisi"
+loading = "Chargement…"
+
+[js.landing.serverStatus]
+server = "SERVEUR"
+offline = "HORS LIGNE"
+players = "JOUEURS"
+
+[js.landing.systemScan]
+checking = "Vérification de l'ordinateur…"
+noCompatibleJava = "Java manquant"
+installJavaMessage = "Pour lancer Minecraft, il faut Java {major} (64 bits). Le launcher peut l'installer pour toi, rien d'autre à faire."
+installJava = "Installer Java"
+installJavaManually = "Je l'installe moi-même"
+javaDownloadPrepare = "Préparation du téléchargement de Java…"
+javaDownloadFailureTitle = "Erreur pendant le téléchargement de Java"
+javaDownloadFailureText = "Vérifie ta connexion et réessaie ; si ça recommence, demande de l'aide sur le Discord."
+javaRequired = "Java est indispensable<br>pour jouer"
+javaRequiredMessage = "Il faut Java {major} (64 bits) pour lancer le jeu.<br><br>Le plus simple : laisse le launcher l'installer pour toi. Besoin d'aide ? Demande sur le <a href=\"https://discord.gg/YDzz8MfSaj\">Discord</a>."
+javaRequiredDismiss = "J'ai compris"
+javaRequiredCancel = "Retour"
+
+[js.landing.downloadJava]
+findJdkFailure = "Impossible de trouver une version de Java à télécharger."
+javaDownloadCorruptedError = "Le Java téléchargé est abîmé. Réessaie."
+extractingJava = "Installation de Java"
+javaInstalled = "Java est installé !"
+
+[js.landing.dlAsync]
+loadingServerInfo = "Chargement des infos du serveur…"
+fatalError = "Erreur"
+unableToLoadDistributionIndex = "Impossible de récupérer la liste des fichiers du serveur. Vérifie ta connexion et réessaie."
+pleaseWait = "Patiente un instant…"
+errorDuringLaunchTitle = "Erreur au lancement"
+seeConsoleForDetails = "Réessaie ; si ça recommence, demande de l'aide sur le Discord."
+validatingFileIntegrity = "Vérification des fichiers…"
+errorDuringFileVerificationTitle = "Erreur pendant la vérification des fichiers"
+downloadingFiles = "Téléchargement des fichiers…"
+errorDuringFileDownloadTitle = "Erreur pendant le téléchargement"
+preparingToLaunch = "Préparation du lancement…"
+launchingGame = "Lancement du jeu…"
+launchWrapperNotDownloaded = "Un fichier indispensable n'a pas pu être téléchargé, souvent à cause d'un antivirus.<br><br>Désactive-le le temps du lancement et réessaie. Si ça continue, demande de l'aide sur le <a href=\"https://discord.gg/YDzz8MfSaj\">Discord</a>."
+doneEnjoyServer = "C'est parti, bon jeu !"
+checkConsoleForDetails = "Réessaie ; si ça recommence, demande de l'aide sur le Discord."
+
+[js.landing.news]
+checking = "Recherche des actualités"
+
+[js.landing.discord]
+loading = "Chargement du jeu…"
+joining = "En route vers Thalorn !"
+joined = "Explore Thalorn"
+
+[js.overlay]
+dismiss = "Fermer"
+
+[js.settings.fileSelectors]
+executables = "Exécutables"
+allFiles = "Tous les fichiers"
+
+[js.settings.mstfLogin]
+errorTitle = "Un problème est survenu"
+errorMessage = "La connexion Microsoft a échoué. Réessaie."
+okButton = "D'accord"
+
+[js.settings.mstfLogout]
+errorTitle = "Un problème est survenu"
+errorMessage = "La déconnexion Microsoft a échoué. Réessaie."
+okButton = "D'accord"
+
+[js.settings.authAccountSelect]
+selectButton = "Choisir ce compte"
+selectedButton = "Compte choisi &#10004;"
+
+[js.settings.authAccountLogout]
+lastAccountWarningTitle = "Attention<br>c'est ton dernier compte"
+lastAccountWarningMessage = "Il faut au moins un pseudo pour utiliser le launcher : tu devras en choisir un nouveau.<br><br>Te déconnecter quand même ?"
+confirmButton = "Oui, me déconnecter"
+cancelButton = "Annuler"
+
+[js.settings.authAccountPopulate]
+username = "Pseudo"
+uuid = "UUID"
+selectAccount = "Choisir ce compte"
+selectedAccount = "Compte choisi ✓"
+logout = "Se déconnecter"
+changeSkin = "Changer de skin"
+
+[js.settings.dropinMods]
+removeButton = "Supprimer"
+deleteFailedTitle = "Impossible de supprimer<br>le mod {fullName}"
+deleteFailedMessage = "Vérifie que le fichier n'est pas utilisé et réessaie."
+failedToggleTitle = "Impossible d'activer ou désactiver<br>un ou plusieurs mods"
+okButton = "D'accord"
+
+[js.settings.serverListing]
+mainServer = "Serveur principal"
+
+[js.settings.java]
+selectedJava = "Choisi : Java {version} ({vendor})"
+invalidSelection = "Choix invalide"
+requiresJava = "Il faut Java {major} 64 bits."
+availableOptions = "Options disponibles pour Java {major} (machine HotSpot)"
+
+[js.settings.about]
+preReleaseTitle = "Préversion"
+stableReleaseTitle = "Version stable"
+releaseNotesFailed = "Impossible de charger les notes de version."
+
+[js.settings.updates]
+newReleaseTitle = "Nouvelle version disponible"
+newPreReleaseTitle = "Nouvelle préversion disponible"
+downloadingButton = "Téléchargement…"
+downloadButton = 'Télécharger<span style="font-size: 10px;color: gray;text-shadow: none !important;">Ferme le launcher et lance le fichier téléchargé.</span>'
+latestVersionTitle = "Tu as la dernière version"
+checkForUpdatesButton = "Rechercher une mise à jour"
+checkingForUpdatesButton = "Recherche en cours…"
+
+[js.settings.msftLogin]
+errorTitle = "Connexion Microsoft impossible"
+errorMessage = "Nous n'avons pas pu vérifier ton compte Microsoft. Réessaie."
+okButton = "D'accord"
+
+[js.uibinder.startup]
+fatalErrorTitle = "Impossible de joindre le serveur"
+fatalErrorMessage = "Le launcher n'a pas pu télécharger la liste des fichiers du serveur, et n'en a aucune copie.<br><br>Vérifie que tu es connecté à Internet, puis relance le launcher."
+closeButton = "Fermer"
+
+[js.uibinder.validateAccount]
+failedMessageTitle = "Connexion à renouveler"
+failedMessage = "La connexion de <strong>{account}</strong> doit être renouvelée. Choisis un autre compte ou reconnecte-toi."
+failedMessageSelectAnotherAccount = "La connexion de <strong>{account}</strong> doit être renouvelée. Reconnecte-toi."
+loginButton = "Se connecter"
+selectAnotherAccountButton = "Choisir un autre compte"
+
+[js.uicore.autoUpdate]
+checkingForUpdateButton = "Recherche de mise à jour…"
+installNowButton = "Installer maintenant"
+checkForUpdatesButton = "Rechercher une mise à jour"
+
+[js.auth.offline.error]
+invalidUsernameTitle = "Pseudo invalide"
+invalidUsernameDesc = "Ton pseudo doit faire 1 à 16 caractères : lettres, chiffres et _ uniquement."

@@ -1,6 +1,6 @@
 appId: 'fr.bytesafe.cobblemonfrontierlauncher'
 productName: 'Cobblemon Frontier Launcher'
-artifactName: '${productName}-setup-${version}.${ext}'
+artifactName: 'CobblemonFrontierLauncher-setup-${version}.${ext}'
 
 copyright: 'Copyright © 2018-2026 Daniel Scalzi (Helios Launcher), Cobblemon Frontier fork'
 
@@ -9,6 +9,18 @@ compression: 'maximum'
 
 files:
   - '!{dist,.gitignore,.vscode,docs,dev-app-update.yml,.nvmrc,eslint.config.mjs}'
+  # React/Vite source and dev tooling -- only the build OUTPUT (app/preload-dist,
+  # app/assets/react) ships, never the src/ it's built from.
+  - '!{src,tailwind.config.js,postcss.config.js,vite.config.mjs,electron.vite.config.mjs}'
+  # Pre-existing untracked debug scripts at the repo root, not meant to ship.
+  - '!{cdp_alerttest.js,cdp_menu.js,cdp_verify.js}'
+
+# Mises à jour automatiques : le launcher installé lit latest.yml (Windows) /
+# latest-linux.yml (Linux) dans ce dossier. Publier une version = y copier
+# l'installeur, son .blockmap et le latest*.yml générés dans dist/.
+publish:
+  provider: generic
+  url: 'https://cobblemon-frontier.fr/cobblemon-launcher/launcher-builds/'
 
 extraResources:
   - 'libraries'

@@ -1,20 +1,40 @@
 # Custom Language File for Launcher Customizer
 
 [ejs.app]
-title = "Helios Launcher"
+title = "Cobblemon Frontier Launcher"
 
 [ejs.landing]
-mediaGitHubURL = "https://github.com/dscalzi/HeliosLauncher"
+mediaGitHubURL = "https://cobblemon-frontier.fr"
 mediaXURL = "#"
 mediaInstagramURL = "#"
 mediaYouTubeURL = "#"
-mediaDiscordURL = "https://discord.gg/zNWUXdt"
+mediaDiscordURL = "https://discord.gg/YDzz8MfSaj"
+gameName = "Cobblemon Frontier"
+tagline = "Explore un monde ouvert Pokémon, capture et entraîne ton équipe, puis bâtis et fais grandir ta ville avec les autres joueurs."
+modsButton = "Mods"
+newsFilterAll = "Tout"
+newsFilterAnnounce = "Annonces"
+newsFilterUpdate = "Mises à jour"
+boutiqueNotice = "Bientôt disponible — aperçu de la future boutique, aucun paiement réel pour l'instant."
+boutiqueAddButton = "Ajouter"
+boutiquePerkPrefix = "Préfixe et pseudo coloré en jeu"
+boutiquePerkCosmetics = "Cosmétiques exclusifs"
+boutiquePerkPriority = "Passe en priorité si un mode est plein"
+boutiquePerkPreview = "Accès anticipé aux nouveautés"
+boutiqueBestBadge = "Meilleur rang"
+
+[ejs.landing.nav]
+jeux = "Jeux"
+news = "News"
+boutique = "Boutique"
 
 [ejs.settings]
-sourceGithubLink = "https://github.com/dscalZi/HeliosLauncher"
-supportLink = "https://github.com/dscalZi/HeliosLauncher/issues"
+sourceGithub = "Site du serveur"
+sourceGithubLink = "https://cobblemon-frontier.fr"
+support = "Aide (Discord)"
+supportLink = "https://discord.gg/YDzz8MfSaj"
 
 [ejs.welcome]
-welcomeHeader = "WELCOME TO WESTEROSCRAFT"
-welcomeDescription = "Our mission is to recreate the universe imagined by author George RR Martin in his fantasy series, A Song of Ice and Fire.  Through the collaborative effort of thousands of community members, we have sought to create Westeros as accurately and precisely as possible within Minecraft.  The world we are creating is yours to explore.  Journey from Dorne to Castle Black, and if you aren’t afraid, beyond the Wall itself, but best not delay.  As the words of House Stark ominously warn: Winter is Coming."
-welcomeDescCTA = "You are just a few clicks away from Westeros."
+welcomeHeader = "BIENVENUE SUR COBBLEMON FRONTIER"
+welcomeDescription = "Cobblemon Frontier est une aventure Pokémon en monde ouvert dans Minecraft. Explore des terres sauvages, capture et entraîne tes Pokémon, puis fonde ta ville et fais-la grandir avec les autres joueurs."
+welcomeDescCTA = "Plus que quelques clics avant de partir à l'aventure."

@@ -33,10 +33,10 @@ exports.queryEJS = function(id, placeHolders){
 }
 
 exports.setupLanguage = function(){
-    // Load Language Files
+    // Load Language Files : l'anglais d'Helios sert de secours, le français
+    // (fr_FR.toml, même clés) remplace tout ce qu'il traduit.
     exports.loadLanguage('en_US')
-    // Uncomment this when translations are ready
-    //exports.loadLanguage('xx_XX')
+    exports.loadLanguage('fr_FR')
 
     // Load Custom Language File for Launcher Customizer
     exports.loadLanguage('_custom')

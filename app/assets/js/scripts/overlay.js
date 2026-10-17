@@ -74,6 +74,17 @@ function toggleOverlay(toggleState, dismissable = false, content = 'overlayConte
         dismissable = false
     }
     bindOverlayKeys(toggleState, content, dismissable)
+    // La fenêtre de dialogue est dessinée par l'interface React
+    // (src/renderer/shared/DialogHost.jsx) ; ses boutons cliquent ceux d'ici.
+    window.cobblemonOverlayState = toggleState && content === 'overlayContent' ? {
+        open: true,
+        dismissable,
+        title: document.getElementById('overlayTitle').innerHTML,
+        description: document.getElementById('overlayDesc').innerHTML,
+        acknowledge: document.getElementById('overlayAcknowledge').innerHTML,
+        dismiss: document.getElementById('overlayDismiss').innerHTML
+    } : { open: false }
+    window.dispatchEvent(new CustomEvent('cobblemon:overlay', { detail: window.cobblemonOverlayState }))
     if(toggleState){
         document.getElementById('main').setAttribute('overlay', true)
         // Make things untabbable.

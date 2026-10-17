@@ -44,6 +44,16 @@ const loggerLanding = LoggerUtil.getLogger('Landing')
 
 /* Launch Progress Wrapper Functions */
 
+// État du lancement, relayé à l'interface React (src/renderer/shared/hooks.js)
+// par un évènement à chaque changement ; gardé ici pour qu'un écran monté en
+// cours de route puisse le relire.
+window.cobblemonLaunchState = { loading: false, details: '', percent: 0 }
+
+function emitLaunchState(patch){
+    Object.assign(window.cobblemonLaunchState, patch)
+    window.dispatchEvent(new CustomEvent('cobblemon:launch', { detail: { ...window.cobblemonLaunchState } }))
+}
+
 /**
  * Show/hide the loading area.
  * 
@@ -57,6 +67,7 @@ function toggleLaunchArea(loading){
         launch_details.style.display = 'none'
         launch_content.style.display = 'inline-flex'
     }
+    emitLaunchState(loading ? { loading: true } : { loading: false, percent: 0 })
 }
 
 /**
@@ -66,6 +77,7 @@ function toggleLaunchArea(loading){
  */
 function setLaunchDetails(details){
     launch_details_text.innerHTML = details
+    emitLaunchState({ details })
 }
 
 /**
@@ -77,6 +89,7 @@ function setLaunchPercentage(percent){
     launch_progress.setAttribute('max', 100)
     launch_progress.setAttribute('value', percent)
     launch_progress_label.innerHTML = percent + '%'
+    emitLaunchState({ percent })
 }
 
 /**
@@ -247,7 +260,7 @@ const refreshServerStatus = async (fade = false) => {
         const servStat = await getServerStatus(47, serv.hostname, serv.port)
         console.log(servStat)
         pLabel = Lang.queryJS('landing.serverStatus.players')
-        pVal = servStat.players.online + '/' + servStat.players.max
+        pVal = servStat.players.online + ' connectés'
 
     } catch (err) {
         loggerLanding.warn('Unable to refresh server status, assuming offline.')
@@ -614,6 +627,13 @@ async function dlAsync(login = true) {
 
             setLaunchDetails(Lang.queryJS('landing.dlAsync.doneEnjoyServer'))
 
+            // Always clear the process reference on close, regardless of RPC
+            // being configured -- callers (e.g. cobblemonAPI.launch.isRunning)
+            // rely on `proc` reflecting whether the game is actually running.
+            proc.on('close', () => {
+                proc = null
+            })
+
             // Init Discord Hook
             if(distro.rawDistribution.discord != null && serv.rawServer.discord != null){
                 DiscordWrapper.initRPC(distro.rawDistribution.discord, serv.rawServer.discord)
@@ -622,7 +642,6 @@ async function dlAsync(login = true) {
                     loggerLaunchSuite.info('Shutting down Discord Rich Presence..')
                     DiscordWrapper.shutdownRPC()
                     hasRPC = false
-                    proc = null
                 })
             }
 

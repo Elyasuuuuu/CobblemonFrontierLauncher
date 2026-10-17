@@ -307,5 +307,20 @@ installNowButton = "Installer maintenant"
 checkForUpdatesButton = "Rechercher une mise à jour"
 
 [js.auth.offline.error]
+disabledTitle = "Pseudo désactivé"
+disabledDesc = "Ce serveur demande maintenant un compte Microsoft (Minecraft acheté)."
 invalidUsernameTitle = "Pseudo invalide"
 invalidUsernameDesc = "Ton pseudo doit faire 1 à 16 caractères : lettres, chiffres et _ uniquement."
+
+[js.auth.microsoft.error]
+noProfileTitle = "Pas de profil Minecraft"
+noProfileDesc = "Ce compte Microsoft n'a pas encore de profil Minecraft. Si tu viens d'acheter le jeu (ou de l'avoir par le Game Pass), crée ton profil sur minecraft.net, puis reviens."
+noXboxAccountTitle = "Pas de compte Xbox"
+noXboxAccountDesc = "Ce compte Microsoft n'a pas de compte Xbox associé : crée-le sur xbox.com, puis reconnecte-toi."
+xblBannedTitle = "Xbox Live indisponible"
+xblBannedDesc = "Xbox Live n'est pas disponible dans le pays de ce compte Microsoft."
+under18Title = "Autorisation parentale nécessaire"
+under18Desc = "Un compte de moins de 18 ans doit être ajouté à une famille Microsoft par un adulte."
+unknownTitle = "Connexion impossible"
+unknownDesc = "La connexion à Microsoft a échoué. Réessaie dans un instant."
+disabledDesc = "La connexion Microsoft n'est pas encore ouverte sur ce launcher."

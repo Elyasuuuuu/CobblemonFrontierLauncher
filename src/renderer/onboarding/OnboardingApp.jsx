@@ -35,12 +35,46 @@ function Welcome({ onNext }) {
     )
 }
 
-function Pseudo({ onDone }) {
+function MicrosoftLogin({ onDone }) {
+    const [error, setError] = useState('')
+    const [busy, setBusy] = useState(false)
+
+    const login = async () => {
+        if (busy) return
+        setBusy(true)
+        setError('')
+        try {
+            await api()?.account?.loginMicrosoft?.()
+            onDone()
+        } catch (err) {
+            setError(err.message)
+            setBusy(false)
+        }
+    }
+
+    return (
+        <div>
+            <button type="button" onClick={login} disabled={busy}
+                className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-white text-[#1b1b1b] font-avenirHeavy text-base shadow-lg hover:bg-white/90 transition-colors disabled:opacity-60 disabled:pointer-events-none">
+                <svg width="20" height="20" viewBox="0 0 21 21" aria-hidden="true">
+                    <rect x="1" y="1" width="9" height="9" fill="#f25022" /><rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+                    <rect x="1" y="11" width="9" height="9" fill="#00a4ef" /><rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+                </svg>
+                {busy ? 'Connexion en cours…' : 'Se connecter avec Microsoft'}
+            </button>
+            <p className={'mt-2 text-xs text-center min-h-[1rem] ' + (error ? 'text-[#ff8a80]' : 'text-cf-textDim')}>
+                {error || 'Le compte Microsoft sur lequel tu as acheté Minecraft.'}
+            </p>
+        </div>
+    )
+}
+
+function Pseudo({ onDone, seul }) {
     const [name, setName] = useState('')
     const [error, setError] = useState('')
     const [busy, setBusy] = useState(false)
     const input = useRef(null)
-    useEffect(() => input.current?.focus(), [])
+    useEffect(() => { if (seul) input.current?.focus() }, [seul])
 
     const valid = USERNAME.test(name)
     const submit = async (e) => {
@@ -59,8 +93,6 @@ function Pseudo({ onDone }) {
 
     return (
         <form onSubmit={submit}>
-            <h1 className="font-avenirHeavy text-2xl text-white text-center">Choisis ton pseudo</h1>
-            <p className="mt-2 text-sm text-cf-text/75 text-center">C'est ton nom en jeu, visible par les autres joueurs.</p>
             <input
                 ref={input}
                 value={name}
@@ -68,7 +100,7 @@ function Pseudo({ onDone }) {
                 maxLength={16}
                 spellCheck={false}
                 placeholder="Pseudo"
-                className="cf-input mt-6 text-center text-lg"
+                className="cf-input text-center text-lg"
             />
             <p className={'mt-2 text-xs text-center min-h-[1rem] ' + (error || (name && !valid) ? 'text-[#ff8a80]' : 'text-cf-textDim')}>
                 {error || (name && !valid ? '1 à 16 caractères : lettres, chiffres et _ uniquement.' : '1 à 16 caractères : lettres, chiffres et _')}
@@ -77,10 +109,32 @@ function Pseudo({ onDone }) {
                 À ta première connexion au serveur, tu choisiras un mot de passe avec <span className="text-white font-avenirMedium">/register</span> : il protège ton pseudo.
                 Ensuite, <span className="text-white font-avenirMedium">/login</span> à chaque connexion.
             </div>
-            <button type="submit" disabled={!valid || busy} className="cf-btn-primary w-full mt-6 py-3 text-base disabled:opacity-50 disabled:pointer-events-none">
-                {busy ? 'Un instant…' : 'Continuer'}
+            <button type="submit" disabled={!valid || busy} className={(seul ? 'cf-btn-primary' : 'cf-btn-secondary') + ' w-full mt-6 py-3 text-base disabled:opacity-50 disabled:pointer-events-none'}>
+                {busy ? 'Un instant…' : seul ? 'Continuer' : 'Jouer avec ce pseudo'}
             </button>
         </form>
+    )
+}
+
+/** Connexion : compte Microsoft et/ou pseudo, selon ce que ce launcher accepte (ipcconstants.AUTH_MODES). */
+function Connexion({ onDone }) {
+    const modes = api()?.account?.modes?.() ?? ['pseudo']
+    const microsoft = modes.includes('microsoft')
+    const pseudo = modes.includes('pseudo')
+    return (
+        <div>
+            <h1 className="font-avenirHeavy text-2xl text-white text-center">{microsoft ? 'Connecte-toi' : 'Choisis ton pseudo'}</h1>
+            <p className="mt-2 mb-6 text-sm text-cf-text/75 text-center">
+                {microsoft ? 'Ton pseudo en jeu est celui de ton compte Minecraft.' : "C'est ton nom en jeu, visible par les autres joueurs."}
+            </p>
+            {microsoft && <MicrosoftLogin onDone={onDone} />}
+            {microsoft && pseudo && (
+                <div className="flex items-center gap-3 my-5 text-xs text-cf-textDim">
+                    <span className="flex-1 h-px bg-white/15" />ou, sur le serveur de test<span className="flex-1 h-px bg-white/15" />
+                </div>
+            )}
+            {pseudo && <Pseudo onDone={onDone} seul={!microsoft} />}
+        </div>
     )
 }
 
@@ -155,7 +209,7 @@ function Skin({ onDone }) {
 }
 
 /**
- * Premier lancement : bienvenue, pseudo, skin. Aussi rouvert sur une étape
+ * Premier lancement : bienvenue, connexion (compte Microsoft et/ou pseudo), skin. Aussi rouvert sur une étape
  * précise depuis le menu du compte (changer de skin, après déconnexion).
  */
 export default function OnboardingApp() {
@@ -187,7 +241,7 @@ export default function OnboardingApp() {
                 <div key={step} className="cf-panel w-[min(460px,100%)] px-9 py-9 shadow-2xl animate-[fadeIn_.25s_ease-out]">
                     {!returnToApp && <Steps step={step} />}
                     {step === 'welcome' && <Welcome onNext={() => setStep('pseudo')} />}
-                    {step === 'pseudo' && <Pseudo onDone={() => setStep('skin')} />}
+                    {step === 'pseudo' && <Connexion onDone={() => setStep('skin')} />}
                     {step === 'skin' && <Skin onDone={finish} />}
                 </div>
             </div>

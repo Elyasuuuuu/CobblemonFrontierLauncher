@@ -1,8 +1,11 @@
-// NOTE FOR THIRD-PARTY
-// REPLACE THIS CLIENT ID WITH YOUR APPLICATION ID.
-// SEE https://github.com/dscalzi/HeliosLauncher/blob/master/docs/MicrosoftAuth.md
-exports.AZURE_CLIENT_ID = '1ce6e35a-126f-48fd-97fb-54d143ac6d45'
-// SEE NOTE ABOVE.
+// Application Microsoft (Entra) de Cobblemon Frontier, enregistrée par le propriétaire du serveur
+// (docs/MicrosoftAuth.md) ; l'identifiant d'Helios d'origine n'est pas le nôtre. Vide tant qu'elle
+// n'existe pas : la connexion Microsoft est alors refusée proprement.
+exports.AZURE_CLIENT_ID = ''
+
+// Comptes acceptés : 'pseudo' (serveur hors ligne + AuthMe, aujourd'hui), 'microsoft+pseudo'
+// (launcher TEST, cf. launcher/build-launcher-test.sh), 'microsoft' (jour du passage aux comptes Microsoft).
+exports.AUTH_MODES = 'pseudo'
 
 
 // Opcodes

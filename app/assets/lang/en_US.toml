@@ -307,5 +307,20 @@ installNowButton = "Install Now"
 checkForUpdatesButton = "Check for Updates"
 
 [js.auth.offline.error]
+disabledTitle = "Username disabled"
+disabledDesc = "This server now requires a Microsoft account."
 invalidUsernameTitle = "Invalid Username"
 invalidUsernameDesc = "Usernames must be 1-16 characters long and contain only letters, numbers, and underscores."
+
+[js.auth.microsoft.error]
+noProfileTitle = "No Minecraft profile"
+noProfileDesc = "This Microsoft account has no Minecraft profile yet. Set it up on minecraft.net, then come back."
+noXboxAccountTitle = "No Xbox account"
+noXboxAccountDesc = "This Microsoft account has no Xbox account associated with it."
+xblBannedTitle = "Xbox Live unavailable"
+xblBannedDesc = "Xbox Live is not available in this account's country."
+under18Title = "Parental approval required"
+under18Desc = "Accounts for users under 18 must be added to a Family by an adult."
+unknownTitle = "Login failed"
+unknownDesc = "The Microsoft login failed. Please try again."
+disabledDesc = "Microsoft login is not open on this launcher yet."

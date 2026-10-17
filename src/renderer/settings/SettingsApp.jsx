@@ -59,36 +59,36 @@ function AccountTab() {
 
     return (
         <>
-            <Section title="Ton compte" description="Le pseudo avec lequel tu joues sur le serveur.">
+            <Section title="Ton compte" description={account?.microsoft ? 'Le compte Minecraft avec lequel tu joues.' : 'Le pseudo avec lequel tu joues sur le serveur.'}>
                 <div className="flex items-center gap-4 py-2">
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cf-accent to-cf-accentDark flex items-center justify-center text-2xl font-avenirHeavy text-white">
                         {(account?.displayName ?? '?').charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">
                         <div className="font-avenirHeavy text-xl text-white truncate">{account?.displayName ?? 'Aucun pseudo'}</div>
-                        <div className="text-xs text-cf-textDim">Compte hors ligne, protégé en jeu par ton mot de passe</div>
+                        <div className="text-xs text-cf-textDim">{account?.microsoft ? 'Compte Microsoft' : 'Compte hors ligne, protégé en jeu par ton mot de passe'}</div>
                     </div>
                 </div>
                 <div className="flex flex-wrap gap-3 mt-3">
                     <button onClick={() => api()?.nav?.showOnboarding?.('skin')} className="cf-btn-primary px-5 py-2.5 text-sm">Changer de skin</button>
                     {!confirm ? (
-                        <button onClick={() => setConfirm(true)} className="cf-btn-secondary px-5 py-2.5 text-sm">Changer de pseudo</button>
+                        <button onClick={() => setConfirm(true)} className="cf-btn-secondary px-5 py-2.5 text-sm">{account?.microsoft ? 'Se déconnecter' : 'Changer de pseudo'}</button>
                     ) : (
                         <div className="flex items-center gap-3 rounded-xl bg-[#e5484d]/15 border border-[#e5484d]/40 px-4 py-2.5 text-sm">
-                            <span>Ta progression en jeu est liée à ton pseudo. Changer quand même ?</span>
+                            <span>{account?.microsoft ? 'Te déconnecter de ce compte Microsoft ?' : 'Ta progression en jeu est liée à ton pseudo. Changer quand même ?'}</span>
                             <button onClick={logout} className="cf-btn-red px-4 py-1.5 text-sm">Oui</button>
                             <button onClick={() => setConfirm(false)} className="text-cf-text/80 hover:text-white">Non</button>
                         </div>
                     )}
                 </div>
             </Section>
-            <Section title="Mot de passe" description="Il se gère en jeu, pas dans le launcher.">
+            {!account?.microsoft && <Section title="Mot de passe" description="Il se gère en jeu, pas dans le launcher.">
                 <ul className="text-sm text-cf-text/85 space-y-1.5 leading-relaxed">
                     <li>Première connexion : <span className="text-white font-avenirMedium">/register &lt;mot de passe&gt; &lt;mot de passe&gt;</span></li>
                     <li>Ensuite, à chaque connexion : <span className="text-white font-avenirMedium">/login &lt;mot de passe&gt;</span></li>
                     <li>Mot de passe oublié ? Demande à l'équipe sur le Discord.</li>
                 </ul>
-            </Section>
+            </Section>}
         </>
     )
 }

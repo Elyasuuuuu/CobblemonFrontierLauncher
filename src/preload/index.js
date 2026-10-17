@@ -29,7 +29,7 @@ const ConfigManager = require(path.join(legacyJsDir, 'configmanager.js'))
 const { DistroAPI } = require(path.join(legacyJsDir, 'distromanager.js'))
 const AuthManager = require(path.join(legacyJsDir, 'authmanager.js'))
 const LangLoader = require(path.join(legacyJsDir, 'langloader.js'))
-const { SKIN_API_BASE, SKIN_API_KEY } = require(path.join(legacyJsDir, 'ipcconstants.js'))
+const { SKIN_API_BASE, SKIN_API_KEY, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, AZURE_CLIENT_ID } = require(path.join(legacyJsDir, 'ipcconstants.js'))
 
 const GiB = 1024 * 1024 * 1024
 const MOD_TYPES = ['FabricMod', 'ForgeMod', 'LiteMod', 'LiteLoader']
@@ -45,7 +45,15 @@ function listen(name, callback) {
 }
 
 function publicAccount(acc) {
-    return acc == null ? null : { uuid: acc.uuid, username: acc.username, displayName: acc.displayName }
+    return acc == null ? null : { uuid: acc.uuid, username: acc.username, displayName: acc.displayName, microsoft: acc.type === 'microsoft' }
+}
+
+/** Un compte vient d'être ajouté : sélectionné, enregistré, annoncé à l'interface. */
+function selectionner(acc) {
+    ConfigManager.save()
+    if (typeof updateSelectedAccount === 'function') updateSelectedAccount(acc)
+    emit('cobblemon:account', publicAccount(acc))
+    return publicAccount(acc)
 }
 
 function stripHtml(text) {
@@ -140,6 +148,34 @@ window.cobblemonAPI = {
     account: {
         getSelected: () => publicAccount(ConfigManager.getSelectedAccount()),
 
+        /** Sortes de comptes acceptées : ['microsoft'], ['pseudo'] ou les deux (cf. ipcconstants.AUTH_MODES). */
+        modes: () => AuthManager.modes(),
+
+        /** Fenêtre de connexion Microsoft (processus principal), puis compte Minecraft du joueur. */
+        loginMicrosoft() {
+            if (!AZURE_CLIENT_ID) {
+                return Promise.reject(new Error("La connexion Microsoft n'est pas encore ouverte sur ce launcher."))
+            }
+            return new Promise((resolve, reject) => {
+                ipcRenderer.once(MSFT_OPCODE.REPLY_LOGIN, async (_event, type, payload) => {
+                    if (type !== MSFT_REPLY_TYPE.SUCCESS) {
+                        reject(new Error(payload === MSFT_ERROR.ALREADY_OPEN ? 'Une fenêtre de connexion est déjà ouverte.' : 'Connexion annulée.'))
+                        return
+                    }
+                    if (payload?.code == null) {
+                        reject(new Error(payload?.error_description ? stripHtml(payload.error_description) : 'Microsoft a refusé la connexion.'))
+                        return
+                    }
+                    try {
+                        resolve(selectionner(await AuthManager.addMicrosoftAccount(payload.code)))
+                    } catch (err) {
+                        reject(new Error(stripHtml(err?.desc ?? err?.message ?? 'Connexion impossible.')))
+                    }
+                })
+                ipcRenderer.send(MSFT_OPCODE.OPEN_LOGIN)
+            })
+        },
+
         /** Crée (ou reprend) le pseudo hors ligne et le sélectionne. */
         async create(username) {
             let acc
@@ -157,7 +193,13 @@ window.cobblemonAPI = {
         /** Oublie le pseudo choisi ; s'il en reste un autre, il prend sa place. */
         async logout() {
             const current = ConfigManager.getSelectedAccount()
-            if (current != null) await AuthManager.removeMojangAccount(current.uuid)
+            if (current != null) {
+                if (current.type === 'microsoft') {
+                    await AuthManager.removeMicrosoftAccount(current.uuid)
+                } else {
+                    await AuthManager.removeMojangAccount(current.uuid)
+                }
+            }
             const next = Object.values(ConfigManager.getAuthAccounts())[0] ?? null
             if (next != null) {
                 ConfigManager.setSelectedAccount(next.uuid)

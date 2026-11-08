@@ -146,7 +146,9 @@ function PerformanceTab({ config, update }) {
 
     const max = config.maxRAM
     const tooLow = max < config.ramRecommended
-    const tooHigh = max > config.totalMemory * 0.75
+    // Au-delà de la moitié de la mémoire moins 1 Go (ou du conseillé), Windows et les autres logiciels manquent de place :
+    // un PC de 16 Go à 8 Go montait à 95 % et le jeu se figeait (2026-11-08).
+    const tooHigh = max > Math.max(config.ramRecommended, config.totalMemory / 2 - 1)
     const setMax = (v) => {
         update('maxRAM', v)
         if (config.minRAM > v) update('minRAM', v)
@@ -167,12 +169,12 @@ function PerformanceTab({ config, update }) {
                         <span>{gb(config.ramCeiling)}</span>
                     </div>
                     {tooLow && <p className="mt-3 text-xs text-cf-orange">En dessous de {gb(config.ramRecommended)}, le pack (Cobblemon et une centaine de mods) risque de ramer ou de planter.</p>}
-                    {tooHigh && <p className="mt-3 text-xs text-cf-orange">Plus des trois quarts de ta mémoire : ton ordinateur pourrait ralentir pendant que tu joues.</p>}
+                    {tooHigh && <p className="mt-3 text-xs text-cf-orange">C'est trop pour ton ordinateur : il ne restera pas assez de mémoire à Windows et à tes autres logiciels, et le jeu risque de se figer. Reste vers {gb(config.ramRecommended)}.</p>}
                 </div>
                 <div className="cf-row">
                     <div>
                         <div className="text-sm font-avenirMedium">Mémoire réservée au démarrage</div>
-                        <div className="text-xs text-cf-textDim">La même valeur que le maximum peut réduire les petites saccades.</div>
+                        <div className="text-xs text-cf-textDim">Le jeu démarre avec cette mémoire et en prend plus au besoin, jusqu'au maximum. Plus bas, ton ordinateur garde de la place.</div>
                     </div>
                     <div className="flex items-center gap-3 w-64">
                         <input type="range" min={config.ramFloor} max={max} step={0.5} value={Math.min(config.minRAM, max)} onChange={(e) => update('minRAM', Number(e.target.value))} className="cf-range" />

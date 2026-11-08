@@ -59,14 +59,43 @@ exports.getAbsoluteMaxRAM = function(_ram){
     return Math.floor((mem-(gT16 > 0 ? (Number.parseInt(gT16/8) + (16*1073741824)/4) : mem/4))/1073741824)
 }
 
+/** Plafond de la mémoire conseillée (Go) : au-delà, le pack ne va pas plus vite. */
+const PLAFOND_CONSEILLE = 8
+
+/**
+ * Mémoire conseillée pour le jeu, adaptée à l'ordinateur (2026-11-08) : la moitié de sa mémoire moins 2 Go, jamais
+ * sous le minimum de la distribution (4 Go) ni au-dessus de 8 Go. 16 Go -> 6 Go, 12 Go -> 4 Go, 24 Go et plus -> 8 Go.
+ * Avant, tout le monde recevait la valeur recommandée de la distribution (8 Go), même sur un PC de 16 Go : avec ce que
+ * Java prend en plus du tas, Windows et Discord, la mémoire montait à 95 % et le jeu se figeait.
+ */
+exports.memoireConseillee = function(ram){
+    const total = os.totalmem() / 1073741824
+    const plancher = ram?.minimum != null ? ram.minimum / 1024 : 4
+    const voulu = Math.floor(total / 2) - 2
+    return Math.max(plancher, Math.min(PLAFOND_CONSEILLE, voulu))
+}
+
+/** Mémoire réservée au démarrage : le minimum du pack, jamais plus que le maximum (Java agrandit ensuite au besoin). */
+exports.memoireAuDemarrage = function(ram, maxGo){
+    const plancher = ram?.minimum != null ? ram.minimum / 1024 : 4
+    return Math.min(plancher, maxGo)
+}
+
 function resolveSelectedRAM(ram) {
-    if(ram?.recommended != null) {
-        return `${ram.recommended}M`
+    if(ram?.recommended != null || ram?.minimum != null) {
+        return `${exports.memoireConseillee(ram)}G`
     } else {
         // Legacy behavior
         const mem = os.totalmem()
         return mem >= (8*1073741824) ? '4G' : (mem >= (6*1073741824) ? '3G' : '2G')
     }
+}
+
+function resolveStartRAM(ram) {
+    if(ram?.recommended != null || ram?.minimum != null) {
+        return `${exports.memoireAuDemarrage(ram, exports.memoireConseillee(ram))}G`
+    }
+    return resolveSelectedRAM(ram)
 }
 
 /**
@@ -540,7 +569,7 @@ function defaultJavaConfig(effectiveJavaOptions, ram) {
 
 function defaultJavaConfig8(ram) {
     return {
-        minRAM: resolveSelectedRAM(ram),
+        minRAM: resolveStartRAM(ram),
         maxRAM: resolveSelectedRAM(ram),
         executable: null,
         jvmOptions: [
@@ -554,7 +583,7 @@ function defaultJavaConfig8(ram) {
 
 function defaultJavaConfig17(ram) {
     return {
-        minRAM: resolveSelectedRAM(ram),
+        minRAM: resolveStartRAM(ram),
         maxRAM: resolveSelectedRAM(ram),
         executable: null,
         jvmOptions: [
@@ -588,6 +617,11 @@ exports.ensureJavaConfig = function(serverid, effectiveJavaOptions, ram) {
  * @param {string} serverid The server id.
  * @returns {string} The minimum amount of memory for JVM initialization.
  */
+/** Les serveurs qui ont déjà une configuration Java (pour les corrections faites une seule fois). */
+exports.getJavaConfigServerIds = function(){
+    return Object.keys(config?.javaConfig ?? {})
+}
+
 exports.getMinRAM = function(serverid){
     return config.javaConfig[serverid].minRAM
 }

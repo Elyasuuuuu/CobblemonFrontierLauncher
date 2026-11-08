@@ -92,6 +92,39 @@ function migrateDefaultMemoryOnce() {
 }
 migrateDefaultMemoryOnce()
 
+/**
+ * Une seule fois (0.3.2, 2026-11-08) : la valeur par défaut des versions précédentes était celle de la distribution,
+ * « 8192M », pour le maximum ET la mémoire réservée au démarrage. Sur un PC de 16 Go, c'était trop (95 % de mémoire
+ * utilisée, jeu figé). Seules ces valeurs jamais touchées sont corrigées : un choix fait dans les paramètres s'écrit
+ * « 8G », « 6G »… et n'est jamais changé.
+ */
+function adaptDefaultMemoryOnce() {
+    try {
+        const marker = path.join(ConfigManager.getLauncherDirectory(), 'memoire-adaptee-0.3.2')
+        if (fs.existsSync(marker)) return
+        const ram = { minimum: 4096 }
+        const conseillee = ConfigManager.memoireConseillee(ram)
+        let change = false
+        for (const sid of ConfigManager.getJavaConfigServerIds()) {
+            let max = ramToGB(ConfigManager.getMaxRAM(sid))
+            if (ConfigManager.getMaxRAM(sid) === '8192M' && conseillee < 8) {
+                ConfigManager.setMaxRAM(sid, `${conseillee}G`)
+                max = conseillee
+                change = true
+            }
+            if (ConfigManager.getMinRAM(sid) === '8192M' || ramToGB(ConfigManager.getMinRAM(sid)) > max) {
+                ConfigManager.setMinRAM(sid, `${ConfigManager.memoireAuDemarrage(ram, max)}G`)
+                change = true
+            }
+        }
+        if (change) ConfigManager.save()
+        fs.writeFileSync(marker, `Mémoire adaptée à l'ordinateur (conseillé : ${conseillee} Go).\n`)
+    } catch {
+        // Pas encore de configuration : la valeur par défaut, adaptée, viendra à la première sélection du serveur.
+    }
+}
+adaptDefaultMemoryOnce()
+
 // Dernier état connu de la mise à jour automatique, gardé dès le chargement :
 // les évènements peuvent arriver avant que React soit monté.
 let updateStatus = null
@@ -205,7 +238,7 @@ window.cobblemonAPI = {
                 maxRAM: ramToGB(ConfigManager.getMaxRAM(sid)),
                 ramFloor: ConfigManager.getAbsoluteMinRAM(ram),
                 ramCeiling: ConfigManager.getAbsoluteMaxRAM(ram),
-                ramRecommended: ram?.recommended != null ? ram.recommended / 1024 : 6,
+                ramRecommended: ConfigManager.memoireConseillee(ram),
                 totalMemory: os.totalmem() / GiB,
                 freeMemory: os.freemem() / GiB,
                 jvmOptions: (ConfigManager.getJVMOptions(sid) ?? []).join(' '),

@@ -279,13 +279,19 @@ const refreshServerStatus = async (fade = false) => {
     
 }
 
-refreshMojangStatuses()
+// 0.3.3 : plus d'interrogation du statut Mojang (toutes les heures) ni du ping de l'ancien écran (toutes les 5 min) : ils
+// alimentaient l'ancien accueil EJS, jamais affiché. L'interface React a son propre statut (cobblemonAPI.server.status).
 // Server Status is refreshed in uibinder.js on distributionIndexDone.
 
-// Refresh statuses every hour. The status page itself refreshes every day so...
-let mojangStatusListener = setInterval(() => refreshMojangStatuses(true), 60*60*1000)
-// Set refresh rate to once every 5 minutes.
-let serverStatusListener = setInterval(() => refreshServerStatus(true), 300000)
+/**
+ * Message d'erreur en français, avec le détail technique (souvent en anglais, venu de helios-core) en petit dessous (0.3.3).
+ */
+function messageAvecDetail(cle, detail){
+    const texte = Lang.queryJS(cle)
+    if(!detail) return texte
+    const sur = String(detail).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+    return `${texte}<br><br><span style="opacity:.6;font-size:12px">Détail : ${sur}</span>`
+}
 
 /**
  * Shows an error overlay, toggles off the launch area.
@@ -335,12 +341,11 @@ async function asyncSystemScan(effectiveJavaOptions, launchAfter = true){
             setLaunchDetails(Lang.queryJS('landing.systemScan.javaDownloadPrepare'))
             toggleOverlay(false)
             
-            try {
-                downloadJava(effectiveJavaOptions, launchAfter)
-            } catch(err) {
+            // downloadJava est asynchrone : sans .catch, une panne réseau laissait l'écran sur « Préparation… » (0.3.3).
+            downloadJava(effectiveJavaOptions, launchAfter).catch(err => {
                 loggerLanding.error('Unhandled error in Java Download', err)
                 showLaunchFailure(Lang.queryJS('landing.systemScan.javaDownloadFailureTitle'), Lang.queryJS('landing.systemScan.javaDownloadFailureText'))
-            }
+            })
         })
         setDismissHandler(() => {
             $('#overlayContent').fadeOut(250, () => {
@@ -407,7 +412,7 @@ async function downloadJava(effectiveJavaOptions, launchAfter = true) {
     if(received != asset.size) {
         loggerLanding.warn(`Java Download: Expected ${asset.size} bytes but received ${received}`)
         if(!await validateLocalFile(asset.path, asset.algo, asset.hash)) {
-            log.error(`Hashes do not match, ${asset.id} may be corrupted.`)
+            loggerLanding.error(`Hashes do not match, ${asset.id} may be corrupted.`)
             // Don't know how this could happen, but report it.
             throw new Error(Lang.queryJS('landing.downloadJava.javaDownloadCorruptedError'))
         }
@@ -503,7 +508,7 @@ async function dlAsync(login = true) {
 
     fullRepairModule.childProcess.on('error', (err) => {
         loggerLaunchSuite.error('Error during launch', err)
-        showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringLaunchTitle'), err.message || Lang.queryJS('landing.dlAsync.errorDuringLaunchText'))
+        showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringLaunchTitle'), messageAvecDetail('landing.dlAsync.seeConsoleForDetails', err.message))
     })
     fullRepairModule.childProcess.on('close', (code, _signal) => {
         if(code !== 0){
@@ -522,7 +527,7 @@ async function dlAsync(login = true) {
         setLaunchPercentage(100)
     } catch (err) {
         loggerLaunchSuite.error('Error during file validation.')
-        showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringFileVerificationTitle'), err.displayable || Lang.queryJS('landing.dlAsync.seeConsoleForDetails'))
+        showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringFileVerificationTitle'), messageAvecDetail('landing.dlAsync.networkErrorText', err.displayable))
         return
     }
     
@@ -538,7 +543,7 @@ async function dlAsync(login = true) {
             setDownloadPercentage(100)
         } catch(err) {
             loggerLaunchSuite.error('Error during file download.')
-            showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringFileDownloadTitle'), err.displayable || Lang.queryJS('landing.dlAsync.seeConsoleForDetails'))
+            showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringFileDownloadTitle'), messageAvecDetail('landing.dlAsync.networkErrorText', err.displayable))
             return
         }
     } else {
@@ -630,8 +635,17 @@ async function dlAsync(login = true) {
             // Always clear the process reference on close, regardless of RPC
             // being configured -- callers (e.g. cobblemonAPI.launch.isRunning)
             // rely on `proc` reflecting whether the game is actually running.
-            proc.on('close', () => {
+            proc.on('close', (code) => {
                 proc = null
+                // Le jeu s'est fermé avant d'avoir fini de démarrer (option Java invalide, plantage d'un mod…) : sans ça,
+                // l'écran restait sur « C'est parti, bon jeu ! » sans bouton Jouer (0.3.3).
+                if(window.cobblemonLaunchState.loading) {
+                    if(code !== 0) {
+                        showLaunchFailure(Lang.queryJS('landing.dlAsync.gameClosedTitle'), Lang.queryJS('landing.dlAsync.gameClosedText', { code: String(code) }))
+                    } else {
+                        toggleLaunchArea(false)
+                    }
+                }
             })
 
             // Init Discord Hook

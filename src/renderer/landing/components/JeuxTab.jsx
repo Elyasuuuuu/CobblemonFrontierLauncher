@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNews, typeLabel, formatShortDate } from '../hooks/useNews.js'
+import { typeLabel, formatShortDate } from '../hooks/useNews.js'
 import { useGameRunning, useLaunchState, useUpdateStatus } from '../../shared/hooks.js'
 import NewsDetailPanel from './NewsDetailPanel.jsx'
 
@@ -87,6 +87,12 @@ const discordIcon = (
     </svg>
 )
 
+const voteIcon = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+        <path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9Z" />
+    </svg>
+)
+
 const siteIcon = (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
         <circle cx="12" cy="12" r="9" />
@@ -114,8 +120,8 @@ function LaunchProgress({ details, percent }) {
     )
 }
 
-export default function JeuxTab({ status, onNavigateNews }) {
-    const { articles } = useNews()
+export default function JeuxTab({ status, news, onNavigateNews }) {
+    const articles = news?.articles || []
     const recentArticles = articles.slice(0, 3)
     const [selectedArticle, setSelectedArticle] = useState(null)
     const launch = useLaunchState()
@@ -137,7 +143,7 @@ export default function JeuxTab({ status, onNavigateNews }) {
                         <img src="assets/images/cbm.png" className="w-11 h-11 object-contain" />
                     </div>
                     <div className="flex flex-col gap-1 min-w-0">
-                        <span className="font-avenirMedium text-lg text-cf-text whitespace-nowrap">Cobblemon</span>
+                        <span className="font-avenirMedium text-lg text-cf-text whitespace-nowrap">Cobblemon Frontier</span>
                         <div className="flex items-center gap-1.5 text-sm text-white/85 whitespace-nowrap [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">
                             <StatusDot online={status?.online} />
                             {statusText}
@@ -150,6 +156,7 @@ export default function JeuxTab({ status, onNavigateNews }) {
                     <div className="flex gap-2">
                         <LinkButton url={window.cobblemonAPI?.links?.discord} icon={discordIcon}>Discord</LinkButton>
                         <LinkButton url={window.cobblemonAPI?.links?.site} icon={siteIcon}>Site</LinkButton>
+                        <LinkButton url={window.cobblemonAPI?.links?.vote} icon={voteIcon}>Voter</LinkButton>
                     </div>
                 </div>
             </div>
@@ -176,14 +183,14 @@ export default function JeuxTab({ status, onNavigateNews }) {
                         onClick={onNavigateNews}
                         className="cf-card flex-shrink-0 w-[140px] h-[130px] p-3.5 flex flex-col justify-between text-left transition-[border-color,transform,box-shadow] duration-150 hover:border-cf-accent hover:-translate-y-1 hover:shadow-lg"
                     >
-                        <span className="text-xs text-cf-textDim">{articles.length} posts</span>
+                        <span className="text-xs text-cf-textDim">{articles.length} {articles.length > 1 ? 'articles' : 'article'}</span>
                         <span className="text-cf-accentLight">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                                 <line x1="5" y1="12" x2="19" y2="12" />
                                 <polyline points="12 5 19 12 12 19" />
                             </svg>
                         </span>
-                        <span className="font-avenirMedium text-sm text-cf-text">Toutes les actus</span>
+                        <span className="font-avenirMedium text-sm text-cf-text">Toutes les actualités</span>
                     </button>
                 </div>
 
@@ -243,7 +250,7 @@ export default function JeuxTab({ status, onNavigateNews }) {
 
             <NewsDetailPanel
                 article={selectedArticle}
-                gameName="Cobblemon"
+                gameName="Cobblemon Frontier"
                 onClose={() => setSelectedArticle(null)}
                 onBack={() => { setSelectedArticle(null); onNavigateNews() }}
             />

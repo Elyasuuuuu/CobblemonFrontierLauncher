@@ -18,7 +18,7 @@ const TABS = [
     },
     {
         id: 'news',
-        label: 'News',
+        label: 'Actualités',
         icon: (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                 <rect x="4" y="4" width="16" height="16" rx="2" />
@@ -84,14 +84,9 @@ function AccountMenu() {
                     <button className={item} onClick={run(() => api()?.nav?.showOnboarding?.('skin'))}>Changer de skin</button>
                     <button className={item} onClick={run(() => api()?.nav?.openSettings?.('compte'))}>Paramètres</button>
                     <div className="my-1 h-px bg-white/10" />
-                    <button
-                        className={item + ' text-[#ff8a80]'}
-                        onClick={run(async () => {
-                            const next = await api()?.account?.logout?.()
-                            if (next == null) api()?.nav?.showOnboarding?.('pseudo')
-                        })}
-                    >
-                        Se déconnecter
+                    {/* Même confirmation que dans les Paramètres : la progression en jeu est liée au pseudo (0.3.3). */}
+                    <button className={item + ' text-[#ff8a80]'} onClick={run(() => api()?.nav?.openSettings?.('compte'))}>
+                        Changer de pseudo…
                     </button>
                 </div>
             )}

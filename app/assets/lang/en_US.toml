@@ -211,6 +211,10 @@ launchWrapperNotDownloaded = "The main file, LaunchWrapper, failed to download p
 doneEnjoyServer = "Done. Enjoy the server!"
 checkConsoleForDetails = "Please check the console (CTRL + Shift + i) for more details."
 
+gameClosedTitle = "The game closed during startup"
+gameClosedText = "Minecraft stopped before it finished starting (code {code}). If you changed the advanced Java options, reset them; otherwise try again."
+networkErrorText = "The launcher could not download the game files. Check your internet connection (and antivirus), then try again."
+
 [js.landing.news]
 checking = "Checking for News"
 

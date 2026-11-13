@@ -3,7 +3,8 @@ import Backdrop from '../shared/Backdrop.jsx'
 import TitleBar from '../shared/TitleBar.jsx'
 import { api, useAccount, useWindowEvent } from '../shared/hooks.js'
 
-const USERNAME = /^[A-Za-z0-9_]{1,16}$/
+// 3 à 16 caractères, comme les pseudos Minecraft et AuthMe (minNicknameLength 3) : en dessous, le serveur refuse.
+const USERNAME = /^[A-Za-z0-9_]{3,16}$/
 
 function Steps({ step }) {
     const order = ['welcome', 'pseudo', 'skin']
@@ -71,11 +72,11 @@ function Pseudo({ onDone }) {
                 className="cf-input mt-6 text-center text-lg"
             />
             <p className={'mt-2 text-xs text-center min-h-[1rem] ' + (error || (name && !valid) ? 'text-[#ff8a80]' : 'text-cf-textDim')}>
-                {error || (name && !valid ? '1 à 16 caractères : lettres, chiffres et _ uniquement.' : '1 à 16 caractères : lettres, chiffres et _')}
+                {error || (name && !valid ? '3 à 16 caractères : lettres, chiffres et _ uniquement.' : '3 à 16 caractères : lettres, chiffres et _')}
             </p>
             <div className="mt-4 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-xs text-cf-text/75 leading-relaxed">
-                À ta première connexion au serveur, tu choisiras un mot de passe avec <span className="text-white font-avenirMedium">/register</span> : il protège ton pseudo.
-                Ensuite, <span className="text-white font-avenirMedium">/login</span> à chaque connexion.
+                À ta première connexion, une fenêtre s'ouvre en jeu pour choisir ton <span className="text-white font-avenirMedium">mot de passe</span> : il protège ton pseudo.
+                Ensuite, tu le retapes dans cette fenêtre à chaque connexion.
             </div>
             <button type="submit" disabled={!valid || busy} className="cf-btn-primary w-full mt-6 py-3 text-base disabled:opacity-50 disabled:pointer-events-none">
                 {busy ? 'Un instant…' : 'Continuer'}
@@ -98,7 +99,7 @@ function Skin({ onDone }) {
         setMessage(null)
         try {
             await action()
-            setMessage({ ok: true, text: 'Skin enregistré ! Il sera appliqué à ta prochaine connexion au serveur.' })
+            setMessage({ ok: true, text: 'Skin enregistré ! Il apparaît en jeu dans quelques secondes, même si tu es déjà connecté.' })
             setTimeout(onDone, 1600)
         } catch (err) {
             setMessage({ ok: false, text: "Impossible d'appliquer ce skin (" + err.message + ')' })
@@ -137,7 +138,7 @@ function Skin({ onDone }) {
                 <div className="mt-4">
                     <input ref={fileInput} type="file" accept="image/png" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
                     <button type="button" onClick={() => fileInput.current?.click()} className="cf-input text-left truncate">
-                        {file ? file.name : 'Choisir une image PNG (64×64)…'}
+                        {file ? file.name : 'Choisir une image PNG (64×64 ou 64×32)…'}
                     </button>
                     <button type="button" disabled={!file || busy} onClick={() => run(() => api().skin.upload(file))} className="cf-btn-primary w-full mt-3 py-3 disabled:opacity-50 disabled:pointer-events-none">
                         {busy ? 'Envoi…' : 'Envoyer ce skin'}

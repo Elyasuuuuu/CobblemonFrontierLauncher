@@ -84,8 +84,8 @@ function AccountTab() {
             </Section>
             <Section title="Mot de passe" description="Il se gère en jeu, pas dans le launcher.">
                 <ul className="text-sm text-cf-text/85 space-y-1.5 leading-relaxed">
-                    <li>Première connexion : <span className="text-white font-avenirMedium">/register &lt;mot de passe&gt; &lt;mot de passe&gt;</span></li>
-                    <li>Ensuite, à chaque connexion : <span className="text-white font-avenirMedium">/login &lt;mot de passe&gt;</span></li>
+                    <li>Première connexion : une fenêtre s'ouvre en jeu, tu y choisis ton mot de passe.</li>
+                    <li>Ensuite, à chaque connexion : tu le retapes dans cette même fenêtre.</li>
                     <li>Mot de passe oublié ? Demande à l'équipe sur le Discord.</li>
                 </ul>
             </Section>
@@ -168,8 +168,8 @@ function PerformanceTab({ config, update }) {
                         <span>Recommandé : {gb(config.ramRecommended)}</span>
                         <span>{gb(config.ramCeiling)}</span>
                     </div>
-                    {tooLow && <p className="mt-3 text-xs text-cf-orange">En dessous de {gb(config.ramRecommended)}, le pack (Cobblemon et une centaine de mods) risque de ramer ou de planter.</p>}
-                    {tooHigh && <p className="mt-3 text-xs text-cf-orange">C'est trop pour ton ordinateur : il ne restera pas assez de mémoire à Windows et à tes autres logiciels, et le jeu risque de se figer. Reste vers {gb(config.ramRecommended)}.</p>}
+                    {tooLow && <p className="mt-3 text-xs text-cf-orange">Sous {gb(config.ramRecommended)}, le jeu peut ramer dans les grandes villes. En dessous de {gb(config.ramFloor)}, il risque de planter.</p>}
+                    {tooHigh && <p className="mt-3 text-xs text-cf-orange">C'est trop pour ton ordinateur : il ne restera pas assez de mémoire au système et à tes autres logiciels, et le jeu risque de se figer. Reste vers {gb(config.ramRecommended)}.</p>}
                 </div>
                 <div className="cf-row">
                     <div>
@@ -283,7 +283,7 @@ function LauncherTab({ config, reload }) {
     else if (update?.state === 'latest') status = 'Tu as la dernière version.'
     else if (update?.state === 'downloading') status = `Version ${update.version} en cours de téléchargement…`
     else if (update?.state === 'ready') status = `Version ${update.version} prête à être installée.`
-    else if (update?.state === 'error') status = 'Impossible de vérifier pour le moment.'
+    else if (update?.state === 'error') status = 'Mise à jour impossible pour le moment : nouvel essai au prochain démarrage.'
 
     return (
         <>

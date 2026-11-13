@@ -277,6 +277,18 @@ function createWindow() {
 
     win.loadURL(pathToFileURL(path.join(__dirname, 'app', 'app.ejs')).toString())
 
+    // 0.3.3 : la fenêtre ne quitte jamais l'interface du launcher (fichier glissé dedans, lien suivi par erreur) ; les liens
+    // web s'ouvrent dans le navigateur, le reste est ignoré.
+    win.webContents.on('will-navigate', (event, url) => {
+        if(url === win.webContents.getURL()) return
+        event.preventDefault()
+        if(/^https?:\/\//i.test(url)) shell.openExternal(url)
+    })
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        if(/^https?:\/\//i.test(url)) shell.openExternal(url)
+        return { action: 'deny' }
+    })
+
     /*win.once('ready-to-show', () => {
         win.show()
     })*/

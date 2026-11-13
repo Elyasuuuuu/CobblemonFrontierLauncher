@@ -7,7 +7,20 @@ const logger = LoggerUtil.getLogger('ConfigManager')
 
 const sysRoot = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Application Support' : process.env.HOME)
 
-const dataPath = path.join(sysRoot, '.helioslauncher')
+// Dossier des fichiers du jeu (0.3.3) : .cobblemonfrontier pour les nouvelles installations. Avant, c'était .helioslauncher
+// (nom d'Helios, partagé avec d'autres launchers) : une installation existante garde le chemin de son config.json, et si la
+// config a disparu mais que le jeu est déjà dans .helioslauncher, on le reprend pour ne pas tout retélécharger.
+// build-launcher-test.sh remplace ces deux lignes (dossier -test, pas de reprise).
+const DOSSIER_DONNEES = '.cobblemonfrontier'
+const DOSSIER_HELIOS = '.helioslauncher'
+const dataPath = (() => {
+    const nouveau = path.join(sysRoot, DOSSIER_DONNEES)
+    const ancien = path.join(sysRoot, '.helioslauncher')
+    if(DOSSIER_HELIOS && !fs.existsSync(nouveau) && fs.existsSync(path.join(ancien, 'instances', 'CobblemonFrontier'))) {
+        return ancien
+    }
+    return nouveau
+})()
 
 const launcherDir = require('@electron/remote').app.getPath('userData')
 
@@ -40,8 +53,9 @@ exports.setDataDirectory = function(dataDirectory){
 }
 
 const configPath = path.join(exports.getLauncherDirectory(), 'config.json')
-const configPathLEGACY = path.join(dataPath, 'config.json')
-const firstLaunch = !fs.existsSync(configPath) && !fs.existsSync(configPathLEGACY)
+// Plus de reprise de .helioslauncher/config.json (0.3.3) : ce fichier appartient aux vieux launchers Helios d'autres
+// serveurs ; le déplacer leur prenait leurs comptes et sautait notre accueil. Ce launcher range sa config dans userData.
+const firstLaunch = !fs.existsSync(configPath)
 
 exports.getAbsoluteMinRAM = function(ram){
     if(ram?.minimum != null) {
@@ -71,7 +85,8 @@ const PLAFOND_CONSEILLE = 8
 exports.memoireConseillee = function(ram){
     const total = os.totalmem() / 1073741824
     const plancher = ram?.minimum != null ? ram.minimum / 1024 : 4
-    const voulu = Math.floor(total / 2) - 2
+    // Arrondi d'abord : un PC vendu « 16 Go » n'en annonce que 15,8 environ (mémoire réservée), ce qui donnait 5 Go.
+    const voulu = Math.floor(Math.round(total) / 2) - 2
     return Math.max(plancher, Math.min(PLAFOND_CONSEILLE, voulu))
 }
 
@@ -154,13 +169,9 @@ exports.load = function(){
     if(!fs.existsSync(configPath)){
         // Create all parent directories.
         fs.ensureDirSync(path.join(configPath, '..'))
-        if(fs.existsSync(configPathLEGACY)){
-            fs.moveSync(configPathLEGACY, configPath)
-        } else {
-            doLoad = false
-            config = DEFAULT_CONFIG
-            exports.save()
-        }
+        doLoad = false
+        config = DEFAULT_CONFIG
+        exports.save()
     }
     if(doLoad){
         let doValidate = false

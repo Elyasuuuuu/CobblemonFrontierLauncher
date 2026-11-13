@@ -1,8 +1,8 @@
 {
   "name": "cobblemonfrontierlauncher",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "productName": "Cobblemon Frontier Launcher",
-  "description": "Custom launcher for the Cobblemon Frontier Minecraft server (fork of Helios Launcher)",
+  "description": "Launcher officiel du serveur Minecraft Cobblemon Frontier (basé sur Helios Launcher)",
   "author": "Cobblemon Frontier",
   "license": "MIT",
   "homepage": "https://github.com/Elyasuuuuu/CobblemonFrontierLauncher",
@@ -39,8 +39,6 @@
     "helios-distribution-types": "^1.3.0",
     "jquery": "^3.7.1",
     "lodash.merge": "^4.6.2",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
     "semver": "^7.7.3",
     "toml": "^3.0.0"
   },
@@ -54,6 +52,8 @@
     "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.5",
     "postcss": "^8.5.28",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "tailwindcss": "^3.4.19",
     "vite": "^6.4.3"
   },

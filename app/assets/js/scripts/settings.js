@@ -1475,6 +1475,10 @@ function populateAboutVersionInformation(){
  * of the current version. This value is displayed on the UI.
  */
 function populateReleaseNotes(){
+    // 0.3.3 : le dépôt du launcher n'a pas de releases GitHub et l'ancien écran « À propos » n'est plus affiché : on ne va
+    // plus chercher ce flux à chaque démarrage.
+    return
+    // eslint-disable-next-line no-unreachable
     $.ajax({
         url: 'https://github.com/Elyasuuuuu/CobblemonFrontierLauncher/releases.atom',
         success: (data) => {

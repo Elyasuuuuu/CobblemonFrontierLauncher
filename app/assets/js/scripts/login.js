@@ -5,7 +5,7 @@
  * account, no password) -- see authmanager.js for why.
  */
 // Validation Regex.
-const validUsername         = /^[a-zA-Z0-9_]{1,16}$/
+const validUsername         = /^[a-zA-Z0-9_]{3,16}$/
 
 // Login Elements
 const loginCancelContainer  = document.getElementById('loginCancelContainer')

@@ -30,7 +30,7 @@ title = "Choisis ton skin"
 subheader = "Facultatif : copie le skin d'un compte Minecraft, envoie le tien, ou passe pour l'instant."
 modeMojang = "Copier depuis un pseudo Minecraft"
 modeUpload = "Envoyer une image"
-invalidUsername = "* 1 à 16 lettres, chiffres ou _"
+invalidUsername = "* 3 à 16 lettres, chiffres ou _"
 mojangPlaceholder = "PSEUDO MINECRAFT"
 apply = "Appliquer"
 chooseFile = "Choisir un fichier PNG…"
@@ -211,6 +211,10 @@ launchWrapperNotDownloaded = "Un fichier indispensable n'a pas pu être téléch
 doneEnjoyServer = "C'est parti, bon jeu !"
 checkConsoleForDetails = "Réessaie ; si ça recommence, demande de l'aide sur le Discord."
 
+gameClosedTitle = "Le jeu s'est fermé au démarrage"
+gameClosedText = "Minecraft s'est arrêté avant d'avoir fini de démarrer (code {code}). Si tu as changé les options Java avancées, remets-les par défaut ; sinon réessaie, et si ça recommence, demande de l'aide sur le Discord."
+networkErrorText = "Le launcher n'a pas pu récupérer les fichiers du jeu. Vérifie ta connexion internet (et ton antivirus), puis réessaie."
+
 [js.landing.news]
 checking = "Recherche des actualités"
 
@@ -308,4 +312,4 @@ checkForUpdatesButton = "Rechercher une mise à jour"
 
 [js.auth.offline.error]
 invalidUsernameTitle = "Pseudo invalide"
-invalidUsernameDesc = "Ton pseudo doit faire 1 à 16 caractères : lettres, chiffres et _ uniquement."
+invalidUsernameDesc = "Ton pseudo doit faire 3 à 16 caractères : lettres, chiffres et _ uniquement."

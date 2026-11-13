@@ -140,7 +140,7 @@ export default function NewsDetailPanel({ article, gameName, onBack, onClose }) 
                             onClick={() => window.cobblemonAPI?.shell?.openExternal?.(article.link)}
                             className="cf-btn-secondary text-sm px-4 py-2.5"
                         >
-                            Voir sur Discord
+                            {/discord\.(gg|com)/i.test(article.link) ? 'Voir sur Discord' : 'Lire la suite'}
                         </button>
                     </div>
                 )}

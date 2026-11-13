@@ -18,7 +18,7 @@ const Lang                   = require('./langloader')
 
 const log = LoggerUtil.getLogger('AuthManager')
 
-const validUsername = /^[a-zA-Z0-9_]{1,16}$/
+const validUsername = /^[a-zA-Z0-9_]{3,16}$/
 
 /**
  * Compute the offline UUID for a username, the same way vanilla Minecraft

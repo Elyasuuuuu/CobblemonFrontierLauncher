@@ -137,8 +137,10 @@ ipcRenderer.on('autoUpdateNotification', (_event, arg, info) => {
         realerror: { state: 'error' }
     }[arg]
     if (next == null) return
-    // « À jour » ou « erreur » ne remplacent pas une mise à jour déjà trouvée.
-    if ((next.state === 'latest' || next.state === 'error') && (updateStatus?.state === 'downloading' || updateStatus?.state === 'ready')) return
+    // « À jour » ne remplace pas une mise à jour déjà trouvée, et une erreur ne remplace pas une mise à jour prête à
+    // installer. Mais une erreur pendant le téléchargement doit se voir : sinon « en téléchargement » restait affiché (0.3.3).
+    if (next.state === 'latest' && (updateStatus?.state === 'downloading' || updateStatus?.state === 'ready')) return
+    if (next.state === 'error' && updateStatus?.state === 'ready') return
     updateStatus = next
     emit('cobblemon:update', updateStatus)
 })
@@ -353,14 +355,23 @@ window.cobblemonAPI = {
     },
 
     shell: {
-        openExternal: (url) => shell.openExternal(url),
-        openPath: (target) => shell.openPath(target)
+        // Seulement des liens web (0.3.3) : l'interface ne doit pas pouvoir lancer un fichier ou un protocole local.
+        openExternal: (url) => (/^https?:\/\//i.test(String(url)) ? shell.openExternal(url) : Promise.resolve()),
+        // Seulement le dossier des données du jeu ou ce qu'il contient (0.3.3) : l'interface n'ouvre pas n'importe quel fichier.
+        openPath: (target) => {
+            const cible = path.resolve(String(target || ''))
+            const base = path.resolve(ConfigManager.getDataDirectory())
+            if (cible !== base && !cible.startsWith(base + path.sep)) return Promise.resolve('chemin refusé')
+            return shell.openPath(cible)
+        }
     },
 
     // Liens du serveur, pris dans app/assets/lang/_custom.toml.
     links: {
         discord: LangLoader.queryEJS('landing.mediaDiscordURL'),
-        site: LangLoader.queryEJS('landing.mediaGitHubURL')
+        site: LangLoader.queryEJS('landing.mediaGitHubURL'),
+        // Page des sites de vote (0.3.3) : voter rapporte des récompenses en jeu.
+        vote: `${String(LangLoader.queryEJS('landing.mediaGitHubURL') || 'https://cobblemon-frontier.fr').replace(/\/+$/, '')}/voter`
     },
 
     updater: {

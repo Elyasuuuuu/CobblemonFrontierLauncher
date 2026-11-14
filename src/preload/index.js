@@ -219,7 +219,55 @@ adaptDefaultMemoryOnce()
 // Dernier état connu de la mise à jour automatique, gardé dès le chargement :
 // les évènements peuvent arriver avant que React soit monté.
 let updateStatus = null
+
+function publierMiseAJour(etat) {
+    updateStatus = etat
+    emit('cobblemon:update', updateStatus)
+}
+
+// Mise à jour sans clic (0.4.1, demande de l'utilisateur) : une version téléchargée s'installe toute seule, en silence,
+// puis le launcher redémarre. Jamais pendant le téléchargement ou le lancement du jeu, ni pendant une partie : on attend
+// que le launcher soit au repos, puis on prévient DECOMPTE_S secondes avant. Un clic sur Jouer pendant le décompte
+// l'annule, et on attend de nouveau. Si le launcher est fermé avant, electron-updater installe en silence à la fermeture.
+const DECOMPTE_S = 5
+// Version téléchargée et prête : gardée à part, car les vérifications suivantes (toutes les 30 min) refont passer
+// l'état par « checking » puis « downloading ».
+let versionPrete = null
+let minuterieInstallation = null
+
+function launcherOccupe() {
+    return Boolean(window.cobblemonLaunchState?.loading) || (typeof proc !== 'undefined' && proc != null)
+}
+
+function installerQuandCalme() {
+    if (minuterieInstallation != null) return
+    let reste = DECOMPTE_S
+    minuterieInstallation = setInterval(() => {
+        if (launcherOccupe()) {
+            if (updateStatus?.state !== 'ready') publierMiseAJour({ state: 'ready', version: versionPrete })
+            reste = DECOMPTE_S
+            return
+        }
+        if (reste <= 0) {
+            clearInterval(minuterieInstallation)
+            // Remis à zéro : si l'installation échoue, le prochain « update-downloaded » (vérification suivante) relance.
+            minuterieInstallation = null
+            ipcRenderer.send('autoUpdateAction', 'installUpdateNow')
+            return
+        }
+        publierMiseAJour({ state: 'installing', version: versionPrete, secondes: reste })
+        reste--
+    }, 1000)
+}
+
 ipcRenderer.on('autoUpdateNotification', (_event, arg, info) => {
+    if (arg === 'update-downloaded') {
+        versionPrete = info?.version ?? ''
+        if (updateStatus?.state !== 'installing') publierMiseAJour({ state: 'ready', version: versionPrete })
+        installerQuandCalme()
+    }
+    // Une version est prête : son installation (décompte ou attente de la fin de la partie) garde l'affichage.
+    if (versionPrete != null) return
     const next = {
         'checking-for-update': { state: 'checking' },
         'update-available': { state: 'downloading', version: info?.version ?? '' },

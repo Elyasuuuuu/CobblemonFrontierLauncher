@@ -282,7 +282,8 @@ function LauncherTab({ config, reload }) {
     if (checking || update?.state === 'checking') status = 'Recherche en cours…'
     else if (update?.state === 'latest') status = 'Tu as la dernière version.'
     else if (update?.state === 'downloading') status = `Version ${update.version} en cours de téléchargement…`
-    else if (update?.state === 'ready') status = `Version ${update.version} prête à être installée.`
+    else if (update?.state === 'ready') status = `Version ${update.version} prête : elle s'installera toute seule après ta partie.`
+    else if (update?.state === 'installing') status = `Installation de la version ${update.version} : le launcher redémarre…`
     else if (update?.state === 'error') status = 'Mise à jour impossible pour le moment : nouvel essai au prochain démarrage.'
 
     return (

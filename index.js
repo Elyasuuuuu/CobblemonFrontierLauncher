@@ -85,7 +85,8 @@ ipcMain.on('autoUpdateAction', (event, arg, data) => {
             }
             break
         case 'installUpdateNow':
-            autoUpdater.quitAndInstall()
+            // En silence (pas d'assistant d'installation), puis le launcher redémarre tout seul (0.4.1).
+            autoUpdater.quitAndInstall(true, true)
             break
         default:
             console.log('Unknown argument', arg)

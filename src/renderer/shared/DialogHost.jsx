@@ -1,5 +1,25 @@
 import { useEffect, useState } from 'react'
-import { api } from './hooks.js'
+import { api, useUpdateStatus } from './hooks.js'
+
+/** Décompte avant le redémarrage pour la mise à jour (0.4.1), par-dessus n'importe quel écran. */
+function AvisMiseAJour() {
+    const update = useUpdateStatus()
+    if (update?.state !== 'installing') return null
+    return (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 cf-panel px-5 py-3 shadow-2xl font-avenir text-sm text-cf-text animate-[fadeIn_.15s_ease-out]">
+            Mise à jour {update.version} : le launcher redémarre dans {update.secondes} s…
+        </div>
+    )
+}
+
+export default function DialogHostEtAvis() {
+    return (
+        <>
+            <AvisMiseAJour />
+            <DialogHost />
+        </>
+    )
+}
 
 /**
  * Fenêtres de dialogue d'Helios (erreurs de lancement, installation de
@@ -7,7 +27,7 @@ import { api } from './hooks.js'
  * cobblemon:overlay) ; les boutons cliquent les vrais boutons cachés
  * d'Helios, dont les gestionnaires font la suite.
  */
-export default function DialogHost() {
+function DialogHost() {
     const [dialog, setDialog] = useState(() => api()?.dialog?.getState?.() ?? { open: false })
 
     useEffect(() => api()?.dialog?.onChange?.((d) => setDialog({ ...d })), [])

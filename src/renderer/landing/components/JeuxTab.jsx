@@ -51,21 +51,17 @@ function NewsCard({ article, onOpen }) {
     )
 }
 
+// Plus de bouton (0.4.1) : la mise à jour s'installe toute seule, au repos (voir src/preload/index.js). Le décompte
+// avant le redémarrage est affiché sur tous les écrans par DialogHost.
 function UpdateNotice() {
     const update = useUpdateStatus()
-    if (update == null || (update.state !== 'downloading' && update.state !== 'ready')) return null
-    if (update.state === 'downloading') {
+    if (update?.state === 'downloading') {
         return <div className="text-xs text-cf-textDim px-2">Mise à jour {update.version} en téléchargement…</div>
     }
-    return (
-        <button
-            onClick={() => window.cobblemonAPI?.updater?.installNow?.()}
-            className="cf-btn-primary text-sm px-4 py-2.5"
-            title="Le launcher se ferme, s'installe puis redémarre"
-        >
-            Mettre à jour ({update.version})
-        </button>
-    )
+    if (update?.state === 'ready') {
+        return <div className="text-xs text-cf-textDim px-2">Mise à jour {update.version} prête : elle s'installera toute seule après ta partie.</div>
+    }
+    return null
 }
 
 function LinkButton({ url, icon, children }) {

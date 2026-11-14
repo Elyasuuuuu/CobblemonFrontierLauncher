@@ -48,7 +48,8 @@ if(!isDev){
                 loggerAutoUpdater.info('New update available', info.version)
                 
                 if(process.platform === 'darwin'){
-                    info.darwindownload = `https://github.com/dscalzi/HeliosLauncher/releases/download/v${info.version}/Helios-Launcher-setup-${info.version}${process.arch === 'arm64' ? '-arm64' : '-x64'}.dmg`
+                    // Pas de version macOS publiée : on envoie vers la page de téléchargement du site (0.4.0, avant : GitHub d'Helios).
+                    info.darwindownload = 'https://cobblemon-frontier.fr/rejoindre'
                     showUpdateUI(info)
                 }
                 

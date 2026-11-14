@@ -327,7 +327,7 @@ function AboutTab() {
                 {links.discord && <button onClick={() => api()?.shell?.openExternal?.(links.discord)} className="cf-btn-secondary px-4 py-2 text-sm">Discord</button>}
             </div>
             <p className="mt-5 text-xs text-cf-textDim leading-relaxed">
-                Basé sur Helios Launcher (licence MIT). Minecraft est une marque de Mojang Studios ; Cobblemon Frontier n'est pas affilié à Mojang ni à Microsoft.
+                Minecraft est une marque de Mojang Studios ; Cobblemon Frontier n'est pas affilié à Mojang ni à Microsoft.
             </p>
         </Section>
     )

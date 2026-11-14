@@ -7,20 +7,16 @@ const logger = LoggerUtil.getLogger('ConfigManager')
 
 const sysRoot = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Application Support' : process.env.HOME)
 
-// Dossier des fichiers du jeu (0.3.3) : .cobblemonfrontier pour les nouvelles installations. Avant, c'était .helioslauncher
-// (nom d'Helios, partagé avec d'autres launchers) : une installation existante garde le chemin de son config.json, et si la
-// config a disparu mais que le jeu est déjà dans .helioslauncher, on le reprend pour ne pas tout retélécharger.
-// build-launcher-test.sh remplace ces deux lignes (dossier -test, pas de reprise).
-const DOSSIER_DONNEES = '.cobblemonfrontier'
-const DOSSIER_HELIOS = '.helioslauncher'
-const dataPath = (() => {
-    const nouveau = path.join(sysRoot, DOSSIER_DONNEES)
-    const ancien = path.join(sysRoot, '.helioslauncher')
-    if(DOSSIER_HELIOS && !fs.existsSync(nouveau) && fs.existsSync(path.join(ancien, 'instances', 'CobblemonFrontier'))) {
-        return ancien
-    }
-    return nouveau
-})()
+// Dossier des fichiers du jeu (0.4.0) : « cobblemon-frontier » dans %APPDATA% (Windows) et Application Support (macOS),
+// « .cobblemon-frontier » dans le dossier personnel sous Linux, où les dossiers de ce genre sont cachés.
+// Les anciens dossiers (.helioslauncher jusqu'à la 0.3.2, puis .cobblemonfrontier) sont déménagés au démarrage :
+// voir demenagerAncienDossier.
+// build-launcher-test.sh remplace ces deux lignes (dossier -test, ancien dossier du launcher TEST).
+const NOM_DOSSIER = 'cobblemon-frontier'
+const ANCIENS_DOSSIERS = ['.cobblemonfrontier', '.helioslauncher']
+const dataPath = path.join(sysRoot, (process.platform === 'linux' ? '.' : '') + NOM_DOSSIER)
+// Dossier du jeu dans instances/ : l'identifiant du serveur dans distribution.json.
+const INSTANCE = 'CobblemonFrontier'
 
 const launcherDir = require('@electron/remote').app.getPath('userData')
 
@@ -191,7 +187,70 @@ exports.load = function(){
             exports.save()
         }
     }
+    demenagerAncienDossier()
     logger.info('Successfully Loaded')
+}
+
+function memeChemin(a, b){
+    const na = path.resolve(a), nb = path.resolve(b)
+    return process.platform === 'win32' ? na.toLowerCase() === nb.toLowerCase() : na === nb
+}
+
+function estDans(fichier, dossier){
+    const rel = path.relative(path.resolve(dossier), path.resolve(fichier))
+    return rel !== '' && !rel.startsWith('..') && !path.isAbsolute(rel)
+}
+
+/**
+ * Déménage le jeu d'un ancien dossier (.helioslauncher, .cobblemonfrontier) vers dataPath (0.4.0), pour que les
+ * installations existantes aient le même dossier propre que les nouvelles, sans rien retélécharger.
+ *
+ * - Concerne seulement une config qui pointe sur un ancien dossier par défaut. Un dossier choisi par le joueur dans
+ *   les paramètres n'est jamais déplacé. Sans config (réinstallation), on reprend un ancien dossier qui a déjà le jeu.
+ * - Si l'ancien dossier n'a que notre jeu, il est renommé d'un coup : c'est instantané, sur le même disque. Le chemin
+ *   de Java enregistré est mis à jour.
+ * - .helioslauncher peut être partagé avec les launchers Helios d'autres serveurs (d'autres instances, ou leur ancien
+ *   config.json). Dans ce cas, seul notre jeu (instances/CobblemonFrontier : mondes, réglages, captures, packs) est
+ *   déplacé. Le reste (bibliothèques, Java) se retélécharge dans le nouveau dossier, et les autres launchers gardent
+ *   le leur.
+ * - Si Windows refuse (fichier ouvert, antivirus), on garde l'ancien dossier pour cette fois et on réessaie au
+ *   prochain démarrage.
+ */
+function demenagerAncienDossier(){
+    const courant = config.settings.launcher.dataDirectory
+    const anciens = ANCIENS_DOSSIERS.map(nom => path.join(sysRoot, nom))
+    let ancien
+    if(memeChemin(courant, dataPath)) {
+        if(fs.existsSync(dataPath)) return
+        ancien = anciens.find(a => fs.existsSync(path.join(a, 'instances', INSTANCE)))
+    } else {
+        ancien = anciens.find(a => memeChemin(a, courant))
+    }
+    if(!ancien) return
+
+    try {
+        const instancesAncien = path.join(ancien, 'instances')
+        const autres = fs.existsSync(instancesAncien) ? fs.readdirSync(instancesAncien).filter(n => n !== INSTANCE) : []
+        const partage = autres.length > 0 || fs.existsSync(path.join(ancien, 'config.json'))
+        if(fs.existsSync(ancien) && !fs.existsSync(dataPath) && !partage) {
+            fs.renameSync(ancien, dataPath)
+            for(const id of Object.keys(config.javaConfig ?? {})) {
+                const exe = config.javaConfig[id]?.executable
+                if(typeof exe === 'string' && estDans(exe, ancien)) {
+                    config.javaConfig[id].executable = path.join(dataPath, path.relative(path.resolve(ancien), path.resolve(exe)))
+                }
+            }
+            logger.info(`Dossier du jeu déménagé : ${ancien} -> ${dataPath}`)
+        } else if(fs.existsSync(path.join(instancesAncien, INSTANCE)) && !fs.existsSync(path.join(dataPath, 'instances', INSTANCE))) {
+            fs.ensureDirSync(path.join(dataPath, 'instances'))
+            fs.renameSync(path.join(instancesAncien, INSTANCE), path.join(dataPath, 'instances', INSTANCE))
+            logger.info(`Jeu déménagé de ${ancien} (dossier partagé) vers ${dataPath}`)
+        }
+        config.settings.launcher.dataDirectory = dataPath
+        exports.save()
+    } catch (err) {
+        logger.warn(`Déménagement de ${ancien} reporté au prochain démarrage :`, err)
+    }
 }
 
 /**

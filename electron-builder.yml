@@ -4,7 +4,8 @@ appId: 'fr.bytesafe.cobblemonfrontierlauncher'
 productName: 'Cobblemon Frontier Launcher'
 artifactName: 'CobblemonFrontierLauncher-setup-${version}.${ext}'
 
-copyright: 'Copyright © 2018-2026 Daniel Scalzi (Helios Launcher), Cobblemon Frontier fork'
+# La notice MIT d'origine (Daniel Scalzi, Helios Launcher) reste dans LICENSE.txt, livré avec l'application : la licence l'exige.
+copyright: 'Copyright © 2026 Cobblemon Frontier'
 
 asar: true
 compression: 'maximum'

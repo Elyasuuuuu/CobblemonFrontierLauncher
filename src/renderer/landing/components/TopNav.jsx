@@ -86,7 +86,7 @@ function AccountMenu() {
                     <div className="my-1 h-px bg-white/10" />
                     {/* Même confirmation que dans les Paramètres : la progression en jeu est liée au pseudo (0.3.3). */}
                     <button className={item + ' text-[#ff8a80]'} onClick={run(() => api()?.nav?.openSettings?.('compte'))}>
-                        Changer de pseudo…
+                        Se déconnecter…
                     </button>
                 </div>
             )}

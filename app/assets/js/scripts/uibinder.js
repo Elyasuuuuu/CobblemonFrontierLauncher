@@ -83,9 +83,10 @@ async function showMainUI(data){
         validateSelectedAccount()
     }
 
-    // Premier lancement ou aucun pseudo : le parcours d'accueil React
-    // (bienvenue, pseudo, skin) ; sinon directement l'accueil.
-    if(ConfigManager.isFirstLaunch() || !isLoggedIn){
+    // Premier lancement, aucun compte, ou compte sans session (pseudo seul des versions 0.3, mot de passe changé) : le
+    // parcours d'accueil React (bienvenue, connexion au compte, skin) ; sinon directement l'accueil.
+    const connecte = Boolean(ConfigManager.getSelectedAccount()?.jeton)
+    if(ConfigManager.isFirstLaunch() || !isLoggedIn || !connecte){
         currentView = VIEWS.onboarding
         $(VIEWS.onboarding).fadeIn(600)
     } else {

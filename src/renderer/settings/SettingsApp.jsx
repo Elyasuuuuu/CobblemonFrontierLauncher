@@ -59,33 +59,33 @@ function AccountTab() {
 
     return (
         <>
-            <Section title="Ton compte" description="Le pseudo avec lequel tu joues sur le serveur.">
+            <Section title="Ton compte" description="Le même compte en jeu et sur le site cobblemon-frontier.fr.">
                 <div className="flex items-center gap-4 py-2">
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cf-accent to-cf-accentDark flex items-center justify-center text-2xl font-avenirHeavy text-white">
                         {(account?.displayName ?? '?').charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">
                         <div className="font-avenirHeavy text-xl text-white truncate">{account?.displayName ?? 'Aucun pseudo'}</div>
-                        <div className="text-xs text-cf-textDim">Compte hors ligne, protégé en jeu par ton mot de passe</div>
+                        <div className="text-xs text-cf-textDim">{account?.connecte ? 'Connecté : plus de mot de passe à taper en jeu.' : 'Pas connecté : le mot de passe sera demandé en jeu.'}</div>
                     </div>
                 </div>
                 <div className="flex flex-wrap gap-3 mt-3">
                     <button onClick={() => api()?.nav?.showOnboarding?.('skin')} className="cf-btn-primary px-5 py-2.5 text-sm">Changer de skin</button>
                     {!confirm ? (
-                        <button onClick={() => setConfirm(true)} className="cf-btn-secondary px-5 py-2.5 text-sm">Changer de pseudo</button>
+                        <button onClick={() => setConfirm(true)} className="cf-btn-secondary px-5 py-2.5 text-sm">Se déconnecter</button>
                     ) : (
                         <div className="flex items-center gap-3 rounded-xl bg-[#e5484d]/15 border border-[#e5484d]/40 px-4 py-2.5 text-sm">
-                            <span>Ta progression en jeu est liée à ton pseudo. Changer quand même ?</span>
+                            <span>Te déconnecter de ce compte ? Ta progression reste liée à ce pseudo.</span>
                             <button onClick={logout} className="cf-btn-red px-4 py-1.5 text-sm">Oui</button>
                             <button onClick={() => setConfirm(false)} className="text-cf-text/80 hover:text-white">Non</button>
                         </div>
                     )}
                 </div>
             </Section>
-            <Section title="Mot de passe" description="Il se gère en jeu, pas dans le launcher.">
+            <Section title="Mot de passe" description="Celui de ton compte, tapé une fois ici.">
                 <ul className="text-sm text-cf-text/85 space-y-1.5 leading-relaxed">
-                    <li>Première connexion : une fenêtre s'ouvre en jeu, tu y choisis ton mot de passe.</li>
-                    <li>Ensuite, à chaque connexion : tu le retapes dans cette même fenêtre.</li>
+                    <li>Connecté dans le launcher, tu rejoins le serveur sans retaper ton mot de passe.</li>
+                    <li>Pour le changer, en jeu : <span className="text-white font-avenirMedium">/changepassword &lt;ancien&gt; &lt;nouveau&gt;</span>. Le launcher te demandera ensuite de te reconnecter.</li>
                     <li>Mot de passe oublié ? Demande à l'équipe sur le Discord.</li>
                 </ul>
             </Section>

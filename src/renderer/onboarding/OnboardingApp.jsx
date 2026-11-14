@@ -36,51 +36,110 @@ function Welcome({ onNext }) {
     )
 }
 
+/**
+ * Compte Cobblemon Frontier (0.4.0) : pseudo + mot de passe, le même compte qu'en jeu et sur le site. Une fois connecté
+ * ici, plus de mot de passe à taper en jeu (le launcher donne un ticket au jeu à chaque partie).
+ */
 function Pseudo({ onDone }) {
-    const [name, setName] = useState('')
+    const account = useAccount()
+    const [creer, setCreer] = useState(false)
+    const [name, setName] = useState(() => account?.username ?? '')
+    const [mdp, setMdp] = useState('')
+    const [confirmation, setConfirmation] = useState('')
     const [error, setError] = useState('')
+    const [info, setInfo] = useState(() => (account && !account.connecte
+        ? 'Nouveau : connecte-toi avec le mot de passe de ton compte. Tu n\'auras plus à le taper en jeu.'
+        : ''))
     const [busy, setBusy] = useState(false)
     const input = useRef(null)
-    useEffect(() => input.current?.focus(), [])
+    useEffect(() => input.current?.focus(), [creer])
 
-    const valid = USERNAME.test(name)
+    const nomValide = USERNAME.test(name)
+    const memes = !creer || mdp === confirmation
+    const valid = nomValide && mdp.length > 0 && memes
+    const changerMode = (mode) => { setCreer(mode); setError(''); setInfo(''); setConfirmation('') }
+
     const submit = async (e) => {
         e.preventDefault()
         if (!valid || busy) return
         setBusy(true)
         setError('')
         try {
-            await api()?.account?.create?.(name)
+            await api()?.account?.connexion?.(name, mdp, creer)
+            setMdp('')
+            setConfirmation('')
             onDone()
         } catch (err) {
-            setError(err.message)
             setBusy(false)
+            if (!creer && err.code === 'inconnu') {
+                changerMode(true)
+                setInfo('Ce pseudo n\'a pas encore de compte : choisis ton mot de passe pour le créer.')
+                return
+            }
+            if (creer && err.code === 'existe') {
+                changerMode(false)
+                setInfo('Ce pseudo a déjà un compte : connecte-toi avec son mot de passe.')
+                return
+            }
+            setError(err.message || 'Connexion impossible, réessaie.')
         }
     }
 
+    const onglet = (actif) => 'flex-1 py-2 rounded-lg text-sm font-avenirMedium transition-colors ' + (actif ? 'bg-white/15 text-white' : 'text-cf-text/70 hover:text-white')
+
     return (
         <form onSubmit={submit}>
-            <h1 className="font-avenirHeavy text-2xl text-white text-center">Choisis ton pseudo</h1>
-            <p className="mt-2 text-sm text-cf-text/75 text-center">C'est ton nom en jeu, visible par les autres joueurs.</p>
+            <h1 className="font-avenirHeavy text-2xl text-white text-center">Ton compte</h1>
+            <p className="mt-2 text-sm text-cf-text/75 text-center">Le même pseudo et mot de passe en jeu et sur le site.</p>
+            <div className="mt-5 flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+                <button type="button" onClick={() => changerMode(false)} className={onglet(!creer)}>Se connecter</button>
+                <button type="button" onClick={() => changerMode(true)} className={onglet(creer)}>Créer un compte</button>
+            </div>
             <input
                 ref={input}
                 value={name}
                 onChange={(e) => { setName(e.target.value); setError('') }}
                 maxLength={16}
                 spellCheck={false}
+                autoComplete="username"
                 placeholder="Pseudo"
-                className="cf-input mt-6 text-center text-lg"
+                className="cf-input mt-4 text-center text-lg"
             />
-            <p className={'mt-2 text-xs text-center min-h-[1rem] ' + (error || (name && !valid) ? 'text-[#ff8a80]' : 'text-cf-textDim')}>
-                {error || (name && !valid ? '3 à 16 caractères : lettres, chiffres et _ uniquement.' : '3 à 16 caractères : lettres, chiffres et _')}
+            <p className={'mt-1.5 text-xs text-center min-h-[1rem] ' + (name && !nomValide ? 'text-[#ff8a80]' : 'text-cf-textDim')}>
+                {creer || (name && !nomValide) ? '3 à 16 caractères : lettres, chiffres et _' : '\u00a0'}
             </p>
-            <div className="mt-4 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-xs text-cf-text/75 leading-relaxed">
-                À ta première connexion, une fenêtre s'ouvre en jeu pour choisir ton <span className="text-white font-avenirMedium">mot de passe</span> : il protège ton pseudo.
-                Ensuite, tu le retapes dans cette fenêtre à chaque connexion.
-            </div>
-            <button type="submit" disabled={!valid || busy} className="cf-btn-primary w-full mt-6 py-3 text-base disabled:opacity-50 disabled:pointer-events-none">
-                {busy ? 'Un instant…' : 'Continuer'}
+            <input
+                type="password"
+                value={mdp}
+                onChange={(e) => { setMdp(e.target.value); setError('') }}
+                maxLength={30}
+                autoComplete={creer ? 'new-password' : 'current-password'}
+                placeholder="Mot de passe"
+                className="cf-input mt-2 text-center"
+            />
+            {creer && (
+                <input
+                    type="password"
+                    value={confirmation}
+                    onChange={(e) => { setConfirmation(e.target.value); setError('') }}
+                    maxLength={30}
+                    autoComplete="new-password"
+                    placeholder="Mot de passe (encore)"
+                    className="cf-input mt-2 text-center"
+                />
+            )}
+            <p className={'mt-2 text-xs text-center min-h-[1rem] ' + (error || (creer && confirmation && !memes) ? 'text-[#ff8a80]' : 'text-cf-textDim')}>
+                {error || (creer && confirmation && !memes ? 'Les deux mots de passe ne sont pas pareils.' : (creer ? 'Au moins 5 caractères, sans accent ni espace. Pas ton pseudo.' : '\u00a0'))}
+            </p>
+            {info && (
+                <div className="mt-2 rounded-xl bg-cf-accent/15 border border-cf-accent/30 px-4 py-2.5 text-xs text-cf-text/90 leading-relaxed text-center">{info}</div>
+            )}
+            <button type="submit" disabled={!valid || busy} className="cf-btn-primary w-full mt-4 py-3 text-base disabled:opacity-50 disabled:pointer-events-none">
+                {busy ? 'Un instant…' : (creer ? 'Créer mon compte' : 'Se connecter')}
             </button>
+            <p className="mt-4 text-[11px] text-center text-cf-textDim leading-relaxed">
+                Mot de passe oublié ? Demande à l'équipe sur le Discord.
+            </p>
         </form>
     )
 }
@@ -161,7 +220,7 @@ function Skin({ onDone }) {
  */
 export default function OnboardingApp() {
     const account = useAccount()
-    const [step, setStep] = useState(() => (account ? 'skin' : 'welcome'))
+    const [step, setStep] = useState(() => (account ? (account.connecte ? 'skin' : 'pseudo') : 'welcome'))
     const [returnToApp, setReturnToApp] = useState(false)
 
     useWindowEvent('cobblemon:onboarding', useCallback((detail) => {
@@ -171,7 +230,11 @@ export default function OnboardingApp() {
 
     const finish = () => {
         api()?.nav?.showLanding?.()
-        setTimeout(() => { setStep(api()?.account?.getSelected?.() ? 'skin' : 'welcome'); setReturnToApp(false) }, 600)
+        setTimeout(() => {
+            const acc = api()?.account?.getSelected?.()
+            setStep(acc ? (acc.connecte ? 'skin' : 'pseudo') : 'welcome')
+            setReturnToApp(false)
+        }, 600)
     }
 
     return (

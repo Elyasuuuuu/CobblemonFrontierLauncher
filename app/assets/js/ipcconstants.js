@@ -31,4 +31,6 @@ exports.SHELL_OPCODE = {
 // "set a skin" -- not an admin/server capability -- so shipping it inside
 // the launcher binary (where it's trivially extractable) is acceptable.
 exports.SKIN_API_BASE = 'https://cobblemon-frontier.fr/cobblemon-launcher/api'
+// Serveur dont le compte (AuthMe) est utilisé par la connexion du launcher. build-launcher-test.sh le remplace par 'test'.
+exports.SERVEUR_COMPTE = 'prod'
 exports.SKIN_API_KEY = '03f62349c8ad1ede57abd092ab0a742978dd2b63662a6f75'

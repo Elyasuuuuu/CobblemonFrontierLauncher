@@ -29,7 +29,7 @@ const ConfigManager = require(path.join(legacyJsDir, 'configmanager.js'))
 const { DistroAPI } = require(path.join(legacyJsDir, 'distromanager.js'))
 const AuthManager = require(path.join(legacyJsDir, 'authmanager.js'))
 const LangLoader = require(path.join(legacyJsDir, 'langloader.js'))
-const { SKIN_API_BASE, SKIN_API_KEY } = require(path.join(legacyJsDir, 'ipcconstants.js'))
+const { SKIN_API_BASE, SERVEUR_COMPTE } = require(path.join(legacyJsDir, 'ipcconstants.js'))
 
 const GiB = 1024 * 1024 * 1024
 const MOD_TYPES = ['FabricMod', 'ForgeMod', 'LiteMod', 'LiteLoader']
@@ -45,8 +45,99 @@ function listen(name, callback) {
 }
 
 function publicAccount(acc) {
-    return acc == null ? null : { uuid: acc.uuid, username: acc.username, displayName: acc.displayName }
+    return acc == null ? null : { uuid: acc.uuid, username: acc.username, displayName: acc.displayName, connecte: Boolean(acc.jeton) }
 }
+
+// ---- compte Cobblemon Frontier (0.4.0) : connexion dans le launcher, plus de mot de passe à taper en jeu ----
+// L'API (infra/launcher-api du dépôt principal) vérifie le mot de passe d'AuthMe et rend un jeton de session ; au clic
+// sur Jouer, elle donne un ticket à usage unique que le mod envoie au serveur (connexion sans la fenêtre du jeu).
+
+async function appelCompte(chemin, { methode = 'POST', corps, jeton } = {}) {
+    const entetes = {}
+    if (corps !== undefined) entetes['Content-Type'] = 'application/json'
+    if (jeton) entetes.Authorization = `Bearer ${jeton}`
+    const controle = new AbortController()
+    const minuteur = setTimeout(() => controle.abort(), 15000)
+    let res
+    try {
+        res = await fetch(`${SKIN_API_BASE}${chemin}`, {
+            method: methode, headers: entetes, body: corps === undefined ? undefined : JSON.stringify(corps), signal: controle.signal
+        })
+    } catch {
+        const erreur = new Error('Impossible de joindre le serveur : vérifie ta connexion internet.')
+        erreur.code = 'reseau'
+        throw erreur
+    } finally {
+        clearTimeout(minuteur)
+    }
+    const donnees = await res.json().catch(() => ({}))
+    if (!res.ok) {
+        const erreur = new Error(donnees.error || `Erreur ${res.status}`)
+        erreur.code = donnees.code || (res.status === 401 ? 'session' : String(res.status))
+        erreur.status = res.status
+        throw erreur
+    }
+    return donnees
+}
+
+/** Garde le compte connecté (pseudo exact d'AuthMe, qui fait l'UUID du joueur) et son jeton ; c'est le seul compte. */
+async function enregistrerCompte(pseudo, jeton) {
+    for (const acc of Object.values(ConfigManager.getAuthAccounts())) {
+        if (acc.username !== pseudo) ConfigManager.removeAuthAccount(acc.uuid)
+    }
+    const acc = await AuthManager.addOfflineAccount(pseudo)
+    acc.jeton = jeton
+    ConfigManager.setSelectedAccount(acc.uuid)
+    ConfigManager.save()
+    if (typeof updateSelectedAccount === 'function') updateSelectedAccount(acc)
+    emit('cobblemon:account', publicAccount(acc))
+    return publicAccount(acc)
+}
+
+/** Session refusée par l'API (mot de passe changé, jeton expiré) : on oublie le jeton, le launcher redemandera. */
+function oublierJeton() {
+    const acc = ConfigManager.getSelectedAccount()
+    if (acc?.jeton) {
+        delete acc.jeton
+        ConfigManager.save()
+        emit('cobblemon:account', publicAccount(acc))
+    }
+}
+
+/**
+ * Appelé par landing.js juste avant de lancer le jeu : dépose le ticket de la partie dans le dossier du jeu, où le mod
+ * le lit à la connexion au serveur. Sans réseau ou sans session, rien : la fenêtre du mot de passe s'ouvrira en jeu.
+ */
+window.cobblemonPreparerTicket = async function (serverId) {
+    const fichier = path.join(ConfigManager.getInstanceDirectory(), String(serverId), 'cobblemonfrontier-ticket')
+    try { fs.rmSync(fichier, { force: true }) } catch { /* rien */ }
+    const acc = ConfigManager.getSelectedAccount()
+    if (!acc?.jeton) return false
+    try {
+        const { ticket } = await appelCompte('/compte/ticket', { corps: {}, jeton: acc.jeton })
+        fs.mkdirSync(path.dirname(fichier), { recursive: true })
+        fs.writeFileSync(fichier, ticket, { mode: 0o600 })
+        return true
+    } catch (err) {
+        if (err.status === 401) oublierJeton()
+        return false
+    }
+}
+
+/** Au démarrage : le jeton vaut-il encore ? Sinon, retour à l'écran de connexion (pseudo prérempli). */
+setTimeout(async () => {
+    const acc = ConfigManager.getSelectedAccount()
+    if (!acc?.jeton) return
+    try {
+        await appelCompte('/compte/moi', { methode: 'GET', jeton: acc.jeton })
+    } catch (err) {
+        if (err.status === 401) {
+            oublierJeton()
+            emit('cobblemon:onboarding', { step: 'pseudo' })
+            goTo(VIEWS.onboarding)
+        }
+    }
+}, 4000)
 
 function stripHtml(text) {
     return String(text ?? '').replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '')
@@ -145,10 +236,18 @@ ipcRenderer.on('autoUpdateNotification', (_event, arg, info) => {
     emit('cobblemon:update', updateStatus)
 })
 
+/** Le skin ne change que pour le compte connecté : l'API le lit dans le jeton (0.4.0). */
+function enteteSession() {
+    const jeton = ConfigManager.getSelectedAccount()?.jeton
+    if (!jeton) throw new Error('Connecte-toi à ton compte pour changer de skin.')
+    return { Authorization: `Bearer ${jeton}` }
+}
+
 async function postSkin(endpoint, init) {
     const res = await fetch(`${SKIN_API_BASE}${endpoint}`, init)
     if (!res.ok) {
         const body = await res.json().catch(() => ({}))
+        if (res.status === 401) oublierJeton()
         throw new Error(body.error || `erreur ${res.status}`)
     }
 }
@@ -175,7 +274,17 @@ window.cobblemonAPI = {
     account: {
         getSelected: () => publicAccount(ConfigManager.getSelectedAccount()),
 
-        /** Crée (ou reprend) le pseudo hors ligne et le sélectionne. */
+        /**
+         * Connexion au compte (pseudo + mot de passe du jeu) ; creer = créer le compte. Rend le compte public, ou lève une
+         * erreur au message lisible (code : inconnu, existe, mot_de_passe, mot_de_passe_refuse, reseau…).
+         */
+        async connexion(pseudo, motDePasse, creer = false) {
+            const corps = { serveur: SERVEUR_COMPTE, pseudo: String(pseudo ?? '').trim(), motDePasse: String(motDePasse ?? '') }
+            const reponse = await appelCompte(creer ? '/compte/inscription' : '/compte/connexion', { corps })
+            return enregistrerCompte(reponse.pseudo, reponse.jeton)
+        },
+
+        /** Crée (ou reprend) le pseudo hors ligne et le sélectionne (ancien parcours, sans compte). */
         async create(username) {
             let acc
             try {
@@ -192,6 +301,7 @@ window.cobblemonAPI = {
         /** Oublie le pseudo choisi ; s'il en reste un autre, il prend sa place. */
         async logout() {
             const current = ConfigManager.getSelectedAccount()
+            if (current?.jeton) await appelCompte('/compte/deconnexion', { corps: {}, jeton: current.jeton }).catch(() => {})
             if (current != null) await AuthManager.removeMojangAccount(current.uuid)
             const next = Object.values(ConfigManager.getAuthAccounts())[0] ?? null
             if (next != null) {
@@ -211,17 +321,16 @@ window.cobblemonAPI = {
         copyFrom(minecraftName) {
             return postSkin('/skin/mojang', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-Api-Key': SKIN_API_KEY },
-                body: JSON.stringify({ username: ConfigManager.getSelectedAccount()?.username, mojangName: minecraftName })
+                headers: { 'Content-Type': 'application/json', ...enteteSession() },
+                body: JSON.stringify({ mojangName: minecraftName })
             })
         },
 
         /** Envoie une image de skin (PNG 64×64 ou 64×32). */
         upload(file) {
             const form = new FormData()
-            form.append('username', ConfigManager.getSelectedAccount()?.username ?? '')
             form.append('skin', file)
-            return postSkin('/skin/upload', { method: 'POST', headers: { 'X-Api-Key': SKIN_API_KEY }, body: form })
+            return postSkin('/skin/upload', { method: 'POST', headers: enteteSession(), body: form })
         }
     },
 

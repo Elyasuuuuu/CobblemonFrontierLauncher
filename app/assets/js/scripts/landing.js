@@ -574,6 +574,11 @@ async function dlAsync(login = true) {
         loggerLaunchSuite.info(`Sending selected account (${authUser.displayName}) to ProcessBuilder.`)
         let pb = new ProcessBuilder(serv, versionData, modLoaderData, authUser, remote.app.getVersion())
         setLaunchDetails(Lang.queryJS('landing.dlAsync.launchingGame'))
+        // Ticket de la partie (0.4.0) : le mod l'envoie au serveur, qui connecte le compte sans la fenêtre du mot de passe.
+        if(typeof window.cobblemonPreparerTicket === 'function') {
+            const avecTicket = await window.cobblemonPreparerTicket(serv.rawServer.id)
+            loggerLaunchSuite.info(avecTicket ? 'Ticket de connexion prêt pour le jeu.' : 'Pas de ticket : le mot de passe sera demandé en jeu.')
+        }
 
         // const SERVER_JOINED_REGEX = /\[.+\]: \[CHAT\] [a-zA-Z0-9_]{1,16} joined the game/
         const SERVER_JOINED_REGEX = new RegExp(`\\[.+\\]: \\[CHAT\\] ${authUser.displayName} joined the game`)

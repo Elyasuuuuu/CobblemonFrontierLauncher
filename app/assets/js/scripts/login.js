@@ -159,11 +159,9 @@ loginButton.addEventListener('click', () => {
         $('.circle-loader').toggleClass('load-complete')
         $('.checkmark').toggle()
         setTimeout(() => {
-            // Route through the skin picker before landing on the original
-            // success target -- offline accounts have no skin until one is
-            // chosen (or explicitly skipped) here.
-            skinPickerViewOnDone = loginViewOnSuccess
-            switchView(VIEWS.login, VIEWS.skinPicker, 500, 500, () => {
+            // L'ancien sélecteur de skins (clé d'API dans le launcher) est retiré en 0.4.4 : les skins se changent dans
+            // l'écran React « Choisis ton skin », avec le jeton du compte.
+            switchView(VIEWS.login, loginViewOnSuccess, 500, 500, () => {
                 loginViewOnSuccess = VIEWS.landing // Reset this for good measure.
                 loginCancelEnabled(false) // Reset this for good measure.
                 loginViewCancelHandler = null // Reset this for good measure.

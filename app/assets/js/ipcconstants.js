@@ -1,9 +1,6 @@
-// NOTE FOR THIRD-PARTY
-// REPLACE THIS CLIENT ID WITH YOUR APPLICATION ID.
-// SEE https://github.com/dscalzi/HeliosLauncher/blob/master/docs/MicrosoftAuth.md
-exports.AZURE_CLIENT_ID = '1ce6e35a-126f-48fd-97fb-54d143ac6d45'
-// SEE NOTE ABOVE.
-
+// Plus d'identifiant Azure d'Helios (0.4.4) : la connexion Microsoft n'existe plus, le compte du jeu passe par l'API
+// du launcher. Les codes MSFT ci-dessous restent seulement parce que l'ancien écran des paramètres (settings.js, jamais
+// affiché) s'y abonne encore.
 
 // Opcodes
 exports.MSFT_OPCODE = {
@@ -27,10 +24,8 @@ exports.SHELL_OPCODE = {
     TRASH_ITEM: 'TRASH_ITEM'
 }
 
-// Cobblemon Frontier Launcher skin selection API. This key only gates
-// "set a skin" -- not an admin/server capability -- so shipping it inside
-// the launcher binary (where it's trivially extractable) is acceptable.
+// API du launcher (comptes, tickets de connexion, skins). Depuis la 0.4.0, tout passe par le jeton du compte connecté
+// (Authorization: Bearer) ; l'ancienne clé partagée des skins est retirée du launcher en 0.4.4.
 exports.SKIN_API_BASE = 'https://cobblemon-frontier.fr/cobblemon-launcher/api'
 // Serveur dont le compte (AuthMe) est utilisé par la connexion du launcher. build-launcher-test.sh le remplace par 'test'.
 exports.SERVEUR_COMPTE = 'prod'
-exports.SKIN_API_KEY = '03f62349c8ad1ede57abd092ab0a742978dd2b63662a6f75'

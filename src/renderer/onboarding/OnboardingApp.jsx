@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Backdrop from '../shared/Backdrop.jsx'
 import TitleBar from '../shared/TitleBar.jsx'
+import LienDiscord from '../shared/LienDiscord.jsx'
 import { api, useAccount, useWindowEvent } from '../shared/hooks.js'
 
 // 3 à 16 caractères, comme les pseudos Minecraft et AuthMe (minNicknameLength 3) : en dessous, le serveur refuse.
@@ -138,7 +139,7 @@ function Pseudo({ onDone }) {
                 {busy ? 'Un instant…' : (creer ? 'Créer mon compte' : 'Se connecter')}
             </button>
             <p className="mt-4 text-[11px] text-center text-cf-textDim leading-relaxed">
-                Mot de passe oublié ? Demande à l'équipe sur le Discord.
+                Mot de passe oublié ? Demande à l'équipe sur le <LienDiscord />.
             </p>
         </form>
     )

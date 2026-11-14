@@ -21,7 +21,6 @@ const VIEWS = {
     reactSettings: '#reactSettingsContainer',
     loginOptions: '#loginOptionsContainer',
     login: '#loginContainer',
-    skinPicker: '#skinPickerContainer',
     settings: '#settingsContainer',
     welcome: '#welcomeContainer',
     waiting: '#waitingContainer'

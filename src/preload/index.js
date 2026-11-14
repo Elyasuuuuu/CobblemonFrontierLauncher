@@ -216,6 +216,34 @@ function adaptDefaultMemoryOnce() {
 }
 adaptDefaultMemoryOnce()
 
+/**
+ * PC de 4 ou 5 Go (0.4.4) : le maximum possible tombe sous le minimum du pack (4 Go). Les versions précédentes y
+ * mettaient 4 Go, toute la mémoire de l'ordinateur, sans que le curseur puisse descendre. On ramène au maximum possible ;
+ * le curseur ne peut pas aller au-delà, ce n'est donc jamais un choix du joueur.
+ */
+function adapterPetitPC() {
+    try {
+        const ram = { minimum: 4096 }
+        if (!ConfigManager.memoireInsuffisante(ram)) return
+        const plafond = ConfigManager.getAbsoluteMaxRAM(ram)
+        let change = false
+        for (const sid of ConfigManager.getJavaConfigServerIds()) {
+            if (ramToGB(ConfigManager.getMaxRAM(sid)) > plafond) {
+                ConfigManager.setMaxRAM(sid, gbToRam(plafond))
+                change = true
+            }
+            if (ramToGB(ConfigManager.getMinRAM(sid)) > ramToGB(ConfigManager.getMaxRAM(sid))) {
+                ConfigManager.setMinRAM(sid, ConfigManager.getMaxRAM(sid))
+                change = true
+            }
+        }
+        if (change) ConfigManager.save()
+    } catch {
+        // Pas encore de configuration : la valeur par défaut (memoireConseillee) tient déjà compte du petit PC.
+    }
+}
+adapterPetitPC()
+
 // Dernier état connu de la mise à jour automatique, gardé dès le chargement :
 // les évènements peuvent arriver avant que React soit monté.
 let updateStatus = null
@@ -235,8 +263,35 @@ const DECOMPTE_S = 5
 let versionPrete = null
 let minuterieInstallation = null
 
+/** Un champ de saisie a le focus : le joueur tape peut-être son mot de passe ou un pseudo (0.4.4). */
+function saisieEnCours() {
+    const el = document.activeElement
+    if (el == null || el === document.body) return false
+    // Un champ d'un écran caché (switchView) peut garder le focus : il ne compte pas.
+    if (el.getClientRects().length === 0) return false
+    if (el.isContentEditable) return true
+    const tag = el.tagName
+    if (tag === 'TEXTAREA' || tag === 'SELECT') return true
+    // Les curseurs, cases et boutons ne retiennent rien de ce que tape le joueur.
+    return tag === 'INPUT' && !['range', 'checkbox', 'radio', 'button', 'submit', 'reset', 'file', 'image', 'color'].includes(el.type)
+}
+
+/**
+ * Le launcher ne redémarre jamais pour la mise à jour pendant :
+ * - un lancement ou une partie ;
+ * - l'écran du premier lancement ou « Ton compte » (connexion, création de compte, skin) et les paramètres (0.4.4) ;
+ * - une saisie, où qu'elle soit (0.4.4) ;
+ * - une fenêtre de dialogue ouverte (erreur, installation de Java…) (0.4.4).
+ */
 function launcherOccupe() {
-    return Boolean(window.cobblemonLaunchState?.loading) || (typeof proc !== 'undefined' && proc != null)
+    if (window.cobblemonLaunchState?.loading) return true
+    if (typeof proc !== 'undefined' && proc != null) return true
+    if (typeof getCurrentView === 'function' && typeof VIEWS !== 'undefined') {
+        const vue = getCurrentView()
+        if (vue === VIEWS.onboarding || vue === VIEWS.reactSettings) return true
+    }
+    if (window.cobblemonOverlayState?.open) return true
+    return saisieEnCours()
 }
 
 function installerQuandCalme() {
@@ -395,8 +450,12 @@ window.cobblemonAPI = {
                 launchDetached: ConfigManager.getLaunchDetached(),
                 minRAM: ramToGB(ConfigManager.getMinRAM(sid)),
                 maxRAM: ramToGB(ConfigManager.getMaxRAM(sid)),
-                ramFloor: ConfigManager.getAbsoluteMinRAM(ram),
+                // Bornes du curseur. Sur un petit PC, ramFloor descend sous le minimum du pack (ramMinimum) pour garder un
+                // réglage possible, et memoireInsuffisante fait afficher l'avertissement (0.4.4).
+                ramFloor: ConfigManager.memoireMinCurseur(ram),
                 ramCeiling: ConfigManager.getAbsoluteMaxRAM(ram),
+                ramMinimum: ConfigManager.getAbsoluteMinRAM(ram),
+                memoireInsuffisante: ConfigManager.memoireInsuffisante(ram),
                 ramRecommended: ConfigManager.memoireConseillee(ram),
                 totalMemory: os.totalmem() / GiB,
                 freeMemory: os.freemem() / GiB,

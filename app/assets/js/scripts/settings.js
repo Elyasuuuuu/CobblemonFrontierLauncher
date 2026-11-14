@@ -469,27 +469,6 @@ function bindAuthAccountSelect(){
 }
 
 /**
- * Bind functionality for the change skin buttons. The skin API always acts
- * on ConfigManager.getSelectedAccount(), so if the clicked row isn't already
- * selected it's selected first, then the skin picker is opened and routed
- * back to Settings once done.
- */
-function bindAuthAccountChangeSkin(){
-    Array.from(document.getElementsByClassName('settingsAuthAccountChangeSkin')).map((val) => {
-        val.onclick = (e) => {
-            const uuid = val.closest('.settingsAuthAccount').getAttribute('uuid')
-            if(ConfigManager.getSelectedAccount().uuid !== uuid){
-                setSelectedAccount(uuid)
-                refreshAuthAccountSelected(uuid)
-                updateSelectedAccount(ConfigManager.getSelectedAccount())
-            }
-            skinPickerViewOnDone = VIEWS.settings
-            switchView(getCurrentView(), VIEWS.skinPicker, 500, 500)
-        }
-    })
-}
-
-/**
  * Bind functionality for the log out button. If the logged out account was
  * the selected account, another account will be selected and the UI will
  * be updated accordingly.
@@ -676,7 +655,6 @@ function populateAuthAccounts(){
                 </div>
                 <div class="settingsAuthAccountActions">
                     <button class="settingsAuthAccountSelect" ${selectedUUID === acc.uuid ? 'selected>' + Lang.queryJS('settings.authAccountPopulate.selectedAccount') : '>' + Lang.queryJS('settings.authAccountPopulate.selectAccount')}</button>
-                    <button class="settingsAuthAccountChangeSkin">${Lang.queryJS('settings.authAccountPopulate.changeSkin')}</button>
                     <div class="settingsAuthAccountWrapper">
                         <button class="settingsAuthAccountLogOut">${Lang.queryJS('settings.authAccountPopulate.logout')}</button>
                     </div>
@@ -702,7 +680,6 @@ function populateAuthAccounts(){
 function prepareAccountsTab() {
     populateAuthAccounts()
     bindAuthAccountSelect()
-    bindAuthAccountChangeSkin()
     bindAuthAccountLogOut()
 }
 

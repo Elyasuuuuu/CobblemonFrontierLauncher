@@ -18,7 +18,7 @@ const isDev                             = require('./app/assets/js/isdev')
 const path                              = require('path')
 const semver                            = require('semver')
 const { pathToFileURL }                 = require('url')
-const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants')
+const { MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants')
 const LangLoader                        = require('./app/assets/js/langloader')
 
 // Setup Lang
@@ -141,113 +141,14 @@ ipcMain.handle(SHELL_OPCODE.TRASH_ITEM, async (event, ...args) => {
 app.disableHardwareAcceleration()
 
 
-const REDIRECT_URI_PREFIX = 'https://login.microsoftonline.com/common/oauth2/nativeclient?'
-
-// Microsoft Auth Login
-let msftAuthWindow
-let msftAuthSuccess
-let msftAuthViewSuccess
-let msftAuthViewOnClose
-ipcMain.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
-    if (msftAuthWindow) {
-        ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.ALREADY_OPEN, msftAuthViewOnClose)
-        return
-    }
-    msftAuthSuccess = false
-    msftAuthViewSuccess = arguments_[0]
-    msftAuthViewOnClose = arguments_[1]
-    msftAuthWindow = new BrowserWindow({
-        title: LangLoader.queryJS('index.microsoftLoginTitle'),
-        backgroundColor: '#222222',
-        width: 520,
-        height: 600,
-        frame: true,
-        icon: getPlatformIcon('SealCircle')
-    })
-
-    msftAuthWindow.on('closed', () => {
-        msftAuthWindow = undefined
-    })
-
-    msftAuthWindow.on('close', () => {
-        if(!msftAuthSuccess) {
-            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.NOT_FINISHED, msftAuthViewOnClose)
-        }
-    })
-
-    msftAuthWindow.webContents.on('did-navigate', (_, uri) => {
-        if (uri.startsWith(REDIRECT_URI_PREFIX)) {
-            let queryMap = {}
-            
-            new URL(uri).searchParams.forEach((v, k) => {
-                queryMap[k] = v;
-            });
-
-            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.SUCCESS, queryMap, msftAuthViewSuccess)
-
-            msftAuthSuccess = true
-            msftAuthWindow.close()
-            msftAuthWindow = null
-        }
-    })
-
-    msftAuthWindow.removeMenu()
-    msftAuthWindow.loadURL(`https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?prompt=select_account&client_id=${AZURE_CLIENT_ID}&response_type=code&scope=XboxLive.signin%20offline_access&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient`)
+// Connexion Microsoft retirée (0.4.4) : plus d'identifiant Azure d'Helios ni de fenêtre de connexion Microsoft. Si
+// l'ancien écran des paramètres (jamais affiché) la demandait encore, il reçoit « non terminée », comme une fenêtre
+// fermée par le joueur, et revient en arrière.
+ipcMain.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, _viewOnSuccess, viewOnClose) => {
+    ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.NOT_FINISHED, viewOnClose)
 })
-
-// Microsoft Auth Logout
-let msftLogoutWindow
-let msftLogoutSuccess
-let msftLogoutSuccessSent
-ipcMain.on(MSFT_OPCODE.OPEN_LOGOUT, (ipcEvent, uuid, isLastAccount) => {
-    if (msftLogoutWindow) {
-        ipcEvent.reply(MSFT_OPCODE.REPLY_LOGOUT, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.ALREADY_OPEN)
-        return
-    }
-
-    msftLogoutSuccess = false
-    msftLogoutSuccessSent = false
-    msftLogoutWindow = new BrowserWindow({
-        title: LangLoader.queryJS('index.microsoftLogoutTitle'),
-        backgroundColor: '#222222',
-        width: 520,
-        height: 600,
-        frame: true,
-        icon: getPlatformIcon('SealCircle')
-    })
-
-    msftLogoutWindow.on('closed', () => {
-        msftLogoutWindow = undefined
-    })
-
-    msftLogoutWindow.on('close', () => {
-        if(!msftLogoutSuccess) {
-            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGOUT, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.NOT_FINISHED)
-        } else if(!msftLogoutSuccessSent) {
-            msftLogoutSuccessSent = true
-            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGOUT, MSFT_REPLY_TYPE.SUCCESS, uuid, isLastAccount)
-        }
-    })
-    
-    msftLogoutWindow.webContents.on('did-navigate', (_, uri) => {
-        if(uri.startsWith('https://login.microsoftonline.com/common/oauth2/v2.0/logoutsession')) {
-            msftLogoutSuccess = true
-            setTimeout(() => {
-                if(!msftLogoutSuccessSent) {
-                    msftLogoutSuccessSent = true
-                    ipcEvent.reply(MSFT_OPCODE.REPLY_LOGOUT, MSFT_REPLY_TYPE.SUCCESS, uuid, isLastAccount)
-                }
-
-                if(msftLogoutWindow) {
-                    msftLogoutWindow.close()
-                    msftLogoutWindow = null
-                }
-            }, 5000)
-        }
-    })
-    
-    msftLogoutWindow.removeMenu()
-    msftLogoutWindow.loadURL('https://login.microsoftonline.com/common/oauth2/v2.0/logout')
+ipcMain.on(MSFT_OPCODE.OPEN_LOGOUT, (ipcEvent) => {
+    ipcEvent.reply(MSFT_OPCODE.REPLY_LOGOUT, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.NOT_FINISHED)
 })
 
 // Keep a global reference of the window object, if you don't, the window will

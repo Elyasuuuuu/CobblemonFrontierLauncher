@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Backdrop from '../shared/Backdrop.jsx'
 import TitleBar from '../shared/TitleBar.jsx'
 import Toggle from '../shared/Toggle.jsx'
+import LienDiscord from '../shared/LienDiscord.jsx'
 import { api, useAccount, useUpdateStatus, useWindowEvent, plural } from '../shared/hooks.js'
 
 const TABS = [
@@ -86,7 +87,7 @@ function AccountTab() {
                 <ul className="text-sm text-cf-text/85 space-y-1.5 leading-relaxed">
                     <li>Connecté dans le launcher, tu rejoins le serveur sans retaper ton mot de passe.</li>
                     <li>Pour le changer, en jeu : <span className="text-white font-avenirMedium">/changepassword &lt;ancien&gt; &lt;nouveau&gt;</span>. Le launcher te demandera ensuite de te reconnecter.</li>
-                    <li>Mot de passe oublié ? Demande à l'équipe sur le Discord.</li>
+                    <li>Mot de passe oublié ? Demande à l'équipe sur le <LienDiscord />.</li>
                 </ul>
             </Section>
         </>
@@ -145,7 +146,10 @@ function PerformanceTab({ config, update }) {
     useEffect(() => { api()?.java?.describe?.().then(setJava) }, [])
 
     const max = config.maxRAM
-    const tooLow = max < config.ramRecommended
+    // Petit PC (4 ou 5 Go) : même le maximum possible est sous le minimum du pack (0.4.4). Un seul message, clair.
+    const petitPC = Boolean(config.memoireInsuffisante)
+    const minimumPack = config.ramMinimum ?? config.ramFloor
+    const tooLow = !petitPC && max < config.ramRecommended
     // Au-delà de la moitié de la mémoire moins 1 Go (ou du conseillé), Windows et les autres logiciels manquent de place :
     // un PC de 16 Go à 8 Go montait à 95 % et le jeu se figeait (2026-11-08).
     const tooHigh = max > Math.max(config.ramRecommended, config.totalMemory / 2 - 1)
@@ -168,7 +172,13 @@ function PerformanceTab({ config, update }) {
                         <span>Recommandé : {gb(config.ramRecommended)}</span>
                         <span>{gb(config.ramCeiling)}</span>
                     </div>
-                    {tooLow && <p className="mt-3 text-xs text-cf-orange">Sous {gb(config.ramRecommended)}, le jeu peut ramer dans les grandes villes. En dessous de {gb(config.ramFloor)}, il risque de planter.</p>}
+                    {petitPC && (
+                        <p className="mt-3 text-xs text-cf-orange leading-relaxed">
+                            Ton ordinateur n'a pas assez de mémoire pour donner au jeu le minimum conseillé pour le modpack ({gb(minimumPack)}) : le jeu risque de ramer ou de se fermer.
+                            Laisse le curseur sur {gb(config.ramCeiling)} et ferme les autres logiciels (navigateur, Discord…) avant de jouer.
+                        </p>
+                    )}
+                    {tooLow && <p className="mt-3 text-xs text-cf-orange">Sous {gb(config.ramRecommended)}, le jeu peut ramer dans les grandes villes. En dessous de {gb(minimumPack)}, il risque de planter.</p>}
                     {tooHigh && <p className="mt-3 text-xs text-cf-orange">C'est trop pour ton ordinateur : il ne restera pas assez de mémoire au système et à tes autres logiciels, et le jeu risque de se figer. Reste vers {gb(config.ramRecommended)}.</p>}
                 </div>
                 <div className="cf-row">

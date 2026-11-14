@@ -83,7 +83,26 @@ exports.memoireConseillee = function(ram){
     const plancher = ram?.minimum != null ? ram.minimum / 1024 : 4
     // Arrondi d'abord : un PC vendu « 16 Go » n'en annonce que 15,8 environ (mémoire réservée), ce qui donnait 5 Go.
     const voulu = Math.floor(Math.round(total) / 2) - 2
+    // Petit PC (4 ou 5 Go) : le minimum du pack dépasse ce que l'ordinateur peut donner. On donne le plus possible sans
+    // étouffer le système (0.4.4) ; avant, il recevait 4 Go, soit toute sa mémoire.
+    const plafondPC = exports.getAbsoluteMaxRAM(ram)
+    if (plafondPC < plancher) return Math.max(1, plafondPC)
     return Math.max(plancher, Math.min(PLAFOND_CONSEILLE, voulu))
+}
+
+/**
+ * Plus petite valeur du curseur de mémoire (Go). D'habitude le minimum du pack ; sur un petit PC, dont le maximum
+ * (getAbsoluteMaxRAM) tombe sous ce minimum, un cran en dessous du maximum, pour garder un réglage possible (0.4.4).
+ */
+exports.memoireMinCurseur = function(ram){
+    const plancher = exports.getAbsoluteMinRAM(ram)
+    const plafond = exports.getAbsoluteMaxRAM(ram)
+    return plafond >= plancher ? plancher : Math.max(1, plafond - 1)
+}
+
+/** L'ordinateur ne peut pas donner au jeu le minimum du pack (PC de 4 ou 5 Go) (0.4.4). */
+exports.memoireInsuffisante = function(ram){
+    return exports.getAbsoluteMaxRAM(ram) < exports.getAbsoluteMinRAM(ram)
 }
 
 /** Mémoire réservée au démarrage : le minimum du pack, jamais plus que le maximum (Java agrandit ensuite au besoin). */

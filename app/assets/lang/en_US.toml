@@ -25,17 +25,6 @@ loginEmailError = "* Invalid Value"
 loginEmailPlaceholder = "USERNAME"
 loginButtonText = "CONTINUE"
 
-[ejs.skinPicker]
-title = "Choose Your Skin"
-subheader = "Optional -- copy an existing Minecraft skin, upload your own, or skip for now."
-modeMojang = "Copy from a Minecraft username"
-modeUpload = "Upload an image"
-invalidUsername = "* 1-16 letters, numbers or underscores"
-mojangPlaceholder = "MINECRAFT USERNAME"
-apply = "Apply"
-chooseFile = "Choose a PNG file..."
-skip = "Skip"
-
 [ejs.loginOptions]
 loginOptionsTitle = "Login"
 loginWithOffline = "Continue"
@@ -153,9 +142,6 @@ requiredValue = "* Required"
 title = "Unknown Error During Login"
 desc = "An unknown error has occurred. Please see the console for details."
 
-[js.skinPicker]
-error = "Could not apply skin"
-
 [js.landing.launch]
 pleaseWait = "Please wait.."
 failureTitle = "Error During Launch"
@@ -256,7 +242,6 @@ uuid = "UUID"
 selectAccount = "Select Account"
 selectedAccount = "Selected Account ✓"
 logout = "Log Out"
-changeSkin = "Change Skin"
 
 [js.settings.dropinMods]
 removeButton = "Remove"

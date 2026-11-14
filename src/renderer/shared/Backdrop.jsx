@@ -12,7 +12,8 @@ export default function Backdrop({ blurred = false, parallax = true }) {
         if (el == null) return
         el.style.transform = 'scale(1.08)'
         if (!parallax) return
-        const strength = 18
+        // Décalage maximal en pixels : 18 jusqu'à la 0.4.1, réduit à la demande de l'utilisateur (0.4.2).
+        const strength = 6
         const onMove = (e) => {
             const nx = (e.clientX / window.innerWidth - 0.5) * 2
             const ny = (e.clientY / window.innerHeight - 0.5) * 2
